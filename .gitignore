@@ -1,0 +1,7 @@
+.idea
+venv/
+tracer/__pycache__/
+tracer/local_settings.py
+app01/__pycache__/
+app01/migrations/
+!app01/migrations/__init__.py

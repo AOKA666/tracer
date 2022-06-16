@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load tags %}
+
+
+{% block title %}注册{% endblock %}
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <h2 class="text-center">注册</h2>
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group clearfix">
+                        <label for="{{ field.auto_id }}">{{ field.label }}</label>
+                        {% if field.name == 'code' %}
+                            <div class="row">
+                                <div class="col-md-6">{{ field }}</div>
+                                <div class="col-md-6">
+                                    <input type="button" class="btn btn-primary form-control" id="get_sms" value="获取验证码">
+                                </div>
+                            </div>
+                            <span style="color: red;float: right;">{% render_error form field.name %}</span>
+                        {% else %}
+                            {{ field }}
+                            <span style="color: red;float: right;">{% render_error form field.name %}</span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <div class="form-group">
+                    <button class="btn btn-lg btn-primary btn-block" id="register_btn">注册</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+    <script>
+        $(function () {
+            // 发送验证码倒计时效果
+            bindSendSMSEvent();
+        })
+        function bindSendSMSEvent(){
+            let timer;
+            $("#get_sms").click(function () {
+                if (!$("#id_phone").val()){
+                    alert("请输入手机号！")
+                    return;
+                }
+                if (timer!==undefined){
+                    return;
+                }
+                let that = $(this);
+                $.ajax({
+                    url: '',
+                    type: 'get',
+                    success: function (ret) {
+                        // 后台发送成功才会计时
+                        console.log(ret);
+                        let time = 60;
+                        that.addClass("disabled");
+                        timer = setInterval(function () {
+                            time --;
+                            that.val(time);
+                            if (time===0){
+                                that.removeClass("disabled").val("获取验证码");
+                                clearInterval(timer);
+                                timer = undefined;
+                            }
+                        },1000)
+                    }
+                })
+
+            })
+        }
+    </script>
+{% endblock %}
