@@ -38,7 +38,7 @@
                 {% endfor %}
                 <br>
                 <div class="form-group">
-                    <input type="button" class="btn btn-lg btn-primary btn-block" id="register_btn" value="注册">
+                    <input type="button" class="btn btn-primary btn-block" id="register_btn" value="注册">
                 </div>
             </form>
         </div>
@@ -50,23 +50,25 @@
         $(function () {
             // 发送验证码
             bindSendSMSEvent();
-            bindShowErrorEvent();
             // 注册
             bindRegisterEvent();
+            // 移除边框红色错误提示
+            removeErrorBorder();
         })
-        function bindSendSMSEvent(){
-            let timer;
+        let timer;
+        function bindSendSMSEvent(){                        
             $("#get_sms").click(function () {
                 $(".error-msg").empty();
-                console.log(timer);
+                // 未输入手机号
                 if (!$("#id_phone").val()){
                     alert("请输入手机号！")
                     return;
                 }
                 // 不能重复发送验证码
+                console.log(timer);
                 if (timer!==undefined){
                     return;
-                }
+                }              
                 let that = $(this);
                 $.ajax({
                     url: "{% url 'app01:send_sms' %}",
@@ -77,21 +79,13 @@
                         // 后台发送成功，显示倒计时
                         console.log(ret);
                         if (ret["status"]){
-                            //sendSmsReminder(timer, that);
-                            let time = 60;
-                            that.addClass("disabled");
-                            timer = setInterval(function () {
-                                time --;
-                                that.val(time+"秒后重新获取");
-                                if (time===0){
-                                    that.removeClass("disabled").val("获取验证码");
-                                    clearInterval(timer);
-                                    timer = undefined;
-                                }
-                            },1000)
+                            // 调用页面倒计时的显示
+                            sendSmsReminder(that);
                         }else{
+                            // 显示错误信息
                             $.each(ret["msg"], function (key, value) {
                                 $("#id_"+key).next().text(value);
+                                $("label[for='id_"+key+"']").parent().addClass("has-error");
                             })
                         }
                     }
@@ -99,27 +93,19 @@
 
             })
         }
-        // 页面倒计时效果
-        function sendSmsReminder(timer, that) {
+        // 页面倒计时效果效果
+        function sendSmsReminder(self) {
             let time = 60;
-            that.addClass("disabled");
+            self.addClass("disabled");
             timer = setInterval(function () {
                 time --;
-                that.val(time+"秒后重新获取");
+                self.val(time+"秒后重新获取");
                 if (time===0){
-                    that.removeClass("disabled").val("获取验证码");
+                    self.removeClass("disabled").val("获取验证码");
                     clearInterval(timer);
                     timer = undefined;
                 }
             },1000)
-        }
-
-        function bindShowErrorEvent() {
-            $.each($(".layout"), function () {
-                if ($(this).children(".error-msg").text()){
-                    $(this).addClass("has-error");
-                }
-            })
         }
         // 注册功能，使用ajax是为了防止因页面刷新而使验证码倒计时一起消失
         function bindRegisterEvent() {
@@ -135,9 +121,20 @@
                         }else{
                             $.each(ret["msg"], function (key, value) {
                                 $("#id_"+key).next().text(value);
+                                $("label[for='id_"+key+"']").parent().addClass("has-error");
                             })
                         }
                     }
+                })
+            })
+        }
+        // 鼠标聚焦，移除错误提示
+        function removeErrorBorder(){
+            $.each($("input.field"), function(){
+                $(this).focus(function(){
+                    let nid = $(this).prop("id");
+                    let label = $("label[for='"+nid+"']");
+                    $(label).parent().removeClass("has-error");
                 })
             })
         }
