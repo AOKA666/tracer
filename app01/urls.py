@@ -9,5 +9,10 @@ urlpatterns = [
     path('send/sms/', views.send_sms, name='send_sms'),
     # 短信登录
     path('login/sms/', views.login_sms, name='login_sms'),
-
+    # 密码登录
+    path('login/', views.login, name='login'),
+    # 生成验证码
+    path('get/img/', views.get_img, name='get_img'),
+    # 网站首页
+    path('index/', views.index, name='index')
 ]

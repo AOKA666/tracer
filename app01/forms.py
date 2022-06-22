@@ -108,6 +108,7 @@ class SendSmsForm(forms.Form):
         conn.set(phone, code, 600)
         return phone
 
+
 class LoginSmsForm(BootstrapForm, forms.Form):
     phone = forms.CharField(label='手机号', validators=[
         RegexValidator(r'^1(3\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\d|9[0-35-9])\d{8}$', '手机号格式错误'),])
@@ -137,4 +138,28 @@ class LoginSmsForm(BootstrapForm, forms.Form):
             self.add_error("code", "验证码错误或已过期，请重新获取")
         return code
 
-    
+
+class LoginForm(BootstrapForm, forms.Form):
+    username = forms.CharField(label='邮箱或手机号')
+    password = forms.CharField(label='密码', widget=forms.PasswordInput(render_value=True))
+    code = forms.CharField(label='图片验证码')
+
+    def __init__(self, request, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.request = request
+
+    def clean_code(self):
+        """验证码是否匹配"""
+        code = self.cleaned_data.get("code")
+        session_code = self.request.session.get("code")
+        if session_code:
+            if session_code != code.strip().upper():
+                self.add_error("code", "验证码错误")
+        else:
+            self.add_error("code", "验证码已过期")
+        return code
+
+    def clean_password(self):
+        # 返回加密的密码
+        password = self.cleaned_data.get("password")
+        return encoder(password)
