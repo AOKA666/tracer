@@ -45,6 +45,8 @@ def login_sms(request):
             user = form.cleaned_data.get('phone')
             request.session['user_id'] = user.id
             request.session['user_name'] = user.username
+            # session过期时间要重新设置
+            request.session.set_expiry(60*3600*24*7)
             ret['url'] = '/app01/index'
         else:
             ret['status'] = 0
@@ -70,6 +72,7 @@ def login(request):
             else:
                 request.session["user_id"] = user_obj.id
                 request.session["user_name"] = user_obj.username
+                request.session.set_expiry(60*3600*24*7)
                 return redirect("/app01/index")
         else:
             print(form.errors)
@@ -92,6 +95,10 @@ def get_img(request):
     img.save(io_obj, 'png')
     return HttpResponse(io_obj.getvalue())
 
+
+def logout(request):
+    request.session.flush()
+    return redirect("/app01/index")
 
 def index(request):
     return render(request, "layout/index.html")

@@ -25,8 +25,12 @@ class RegisterForm(BootstrapForm, forms.ModelForm):
     email = forms.EmailField(label='邮箱', error_messages={"invalid": '请输入正确的邮箱格式'})
     phone = forms.CharField(label='手机号', validators=[
         RegexValidator(r'^1(3\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\d|9[0-35-9])\d{8}$', '手机号格式错误'),])
-    password = forms.CharField(label='密码', min_length=3, widget=forms.PasswordInput())
-    confirm_pwd = forms.CharField(label='确认密码', min_length=3, widget=forms.PasswordInput())
+    password = forms.CharField(label='密码', min_length=3, widget=forms.PasswordInput(), error_messages={
+        'min_length': '密码至少3位'
+    })
+    confirm_pwd = forms.CharField(label='确认密码', min_length=3, widget=forms.PasswordInput(),error_messages={
+        'min_length': '密码至少3位'
+    })
     code = forms.CharField(label='验证码')
 
     def clean_code(self):
