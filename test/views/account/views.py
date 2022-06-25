@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse, redirect
-from app01.forms import RegisterForm, SendSmsForm, LoginSmsForm, LoginForm
-from app01 import models
+from test.forms import RegisterForm, SendSmsForm, LoginSmsForm, LoginForm
+from test import models
 from django.db.models import Q
 
 
