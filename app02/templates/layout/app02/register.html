@@ -40,7 +40,7 @@
                 <div class="form-group">
                     <input type="button" class="btn btn-primary btn-block" id="register_btn" value="注册">
                 </div>
-                <div class="pull-right">已有账号？<a href="{% url 'test:login' %}">点击登录！</a></div>
+                <div class="pull-right">已有账号？<a href="{% url 'app02:login' %}">点击登录！</a></div>
             </form>
         </div>
     </div>
@@ -72,7 +72,7 @@
                 }              
                 let that = $(this);
                 $.ajax({
-                    url: "{% url 'test:send_sms' %}",
+                    url: "{% url 'app02:send_sms' %}",
                     type: 'get',
                     dataType: 'json',
                     data: {'phone': $("#id_phone").val(),'tpl':'register'},
@@ -113,7 +113,7 @@
             $("#register_btn").click(function () {
                 $(".error-msg").empty();
                 $.ajax({
-                    url: '/test/register/',
+                    url: '{% url "app02:register" %}',
                     type: 'post',
                     data: $("#regForm").serialize(),
                     success: function (ret) {

@@ -39,7 +39,7 @@
                 <div class="form-group">
                     <input type="button" class="btn btn-primary btn-block" id="login_btn" value="登录">
                 </div>
-                <div class="pull-right"><a href="{% url 'test:login' %}">密码登录？</a></div>
+                <div class="pull-right"><a href="{% url 'app02:login' %}">密码登录？</a></div>
             </form>
         </div>
     </div>
@@ -73,7 +73,7 @@
             }              
             let that = $(this);
             $.ajax({
-                url: "{% url 'test:send_sms' %}",
+                url: "{% url 'app02:send_sms' %}",
                 type: 'get',
                 dataType: 'json',
                 data: {'phone': $("#id_phone").val(),'tpl':'login'},
@@ -112,7 +112,7 @@
         $("#login_btn").click(function () {
             $(".error-msg").empty();
             $.ajax({
-                url: '/test/login/sms/',
+                url: '/app02/login/sms/',
                 type: 'post',
                 data: $("#loginForm").serialize(),
                 success: function (ret) {

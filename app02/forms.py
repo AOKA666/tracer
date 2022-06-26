@@ -3,10 +3,10 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from tracer import local_settings
-from test import models
+from app02 import models
 from django_redis import get_redis_connection
-from test.utils.sms import send_sms_single
-from test.utils.common import encoder
+from app02.utils.sms import send_sms_single
+from app02.utils.common import encoder
 
 
 class BootstrapForm:

@@ -1,5 +1,5 @@
 from django.urls import path, include
-from test.views.account import views
+from app02.views.account import views
 
 urlpatterns = [
     # 注册
@@ -15,5 +15,7 @@ urlpatterns = [
     # 网站首页
     path('index/', views.index, name='index'),
     # 退出登录
-    path('logout/', views.logout, name='logout')
+    path('logout/', views.logout, name='logout'),
+    # 后台管理首页
+    path('backend/', views.backend, anme='backend')
 ]

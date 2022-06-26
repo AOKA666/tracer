@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse, redirect
-from test.forms import RegisterForm, SendSmsForm, LoginSmsForm, LoginForm
-from test import models
+from app02.forms import RegisterForm, SendSmsForm, LoginSmsForm, LoginForm
+from app02 import models
 from django.db.models import Q
 
 
@@ -22,7 +22,7 @@ def register(request):
         return JsonResponse(ret)
     else:
         form = RegisterForm()
-    return render(request, 'layout/register.html', {'form': form})
+    return render(request, 'layout/app02/register.html', {'form': form})
 
 
 def send_sms(request):
@@ -47,14 +47,14 @@ def login_sms(request):
             request.session['user_name'] = user.username
             # session过期时间要重新设置
             request.session.set_expiry(60*3600*24*7)
-            ret['url'] = '/app01/index'
+            ret['url'] = '/app02/index'
         else:
             ret['status'] = 0
             ret['msg'] = form.errors
         return JsonResponse(ret)
     else:
         form = LoginSmsForm()
-    return render(request, "layout/login_sms.html", {"form": form})
+    return render(request, "layout/app02/login_sms.html", {"form": form})
 
 
 def login(request):
@@ -66,19 +66,18 @@ def login(request):
             password = form.cleaned_data.get("password")
             user_obj = models.UserInfo.objects.filter(Q(email=username) | Q(phone=username)).filter(
                 password=password).first()
-            print(user_obj)
             if not user_obj:
                 form.add_error("username", "用户名或密码错误")
             else:
                 request.session["user_id"] = user_obj.id
                 request.session["user_name"] = user_obj.username
-                request.session.set_expiry(60*3600*24*7)
-                return redirect("/app01/index")
+                request.session.set_expiry(3600*24*7)
+                return redirect("/app02/index")
         else:
             print(form.errors)
     else:
         form = LoginForm(request)
-    return render(request, "layout/login.html", {"form": form})
+    return render(request, "layout/app02/login.html", {"form": form})
 
 
 def get_img(request):
@@ -98,8 +97,8 @@ def get_img(request):
 
 def logout(request):
     request.session.flush()
-    return redirect("/app01/index")
+    return redirect("/app02/index")
 
 
 def index(request):
-    return render(request, "layout/index.html")
+    return render(request, "layout/app02/index.html")

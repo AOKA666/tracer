@@ -26,7 +26,7 @@
                             <div class="row">
                                 <div class="col-md-6">{{ field }}<span class="error-msg">{{ field.errors.0 }}</span></div>
                                 <div class="col-md-6">
-                                    <img src="/test/get/img/" id="img_code" title="点击刷新">
+                                    <img src="/app02/get/img/" id="img_code" title="点击刷新">
                                 </div>
                             </div>
                         {% else %}
@@ -39,7 +39,7 @@
                 <div class="form-group">
                     <input type="submit" class="btn btn-primary btn-block" id="login_btn" value="登录">
                 </div>
-                <div class="pull-right"><a href="{% url 'test:login_sms' %}">短信登录？</a></div>
+                <div class="pull-right"><a href="{% url 'app02:login_sms' %}">短信登录？</a></div>
             </form>
         </div>
     </div>

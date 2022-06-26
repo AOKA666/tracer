@@ -62,3 +62,6 @@ class ProjectMember(models.Model):
     user = models.ForeignKey(UserInfo, on_delete=models.CASCADE)
     is_star = models.BooleanField(verbose_name='是否星标')
 
+    def __str__(self):
+        return '%s: %s' % (self.user, self.project)
+
