@@ -14,7 +14,7 @@ def register(request):
             # 表单验证通过
             print(form.cleaned_data)
             form.save()
-            ret["url"] = '/app01/login'
+            ret["url"] = '/app02/login'
         else:
             # 表单验证失败
             ret["status"] = 0

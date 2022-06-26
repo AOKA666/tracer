@@ -47,7 +47,7 @@ class Project(models.Model):
     name = models.CharField(verbose_name='项目名称', max_length=32)
     distract = models.CharField(verbose_name='项目描述', max_length=32)
     color = models.CharField(verbose_name='颜色', max_length=16)
-    is_star = models.BooleanField(verbose_name='星标')
+    is_star = models.BooleanField(verbose_name='星标', default=False)
     member_num = models.SmallIntegerField(verbose_name='人数')
     starter = models.ForeignKey(UserInfo, on_delete=models.CASCADE)
     size = models.SmallIntegerField(verbose_name='已使用空间')

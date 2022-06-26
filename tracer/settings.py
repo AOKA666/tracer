@@ -50,7 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'app01.middleware.account.LoginMiddleware',
+    'app02.middleware.account.LoginMiddleware',
 ]
 
 ROOT_URLCONF = 'tracer.urls'

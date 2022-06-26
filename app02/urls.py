@@ -1,5 +1,6 @@
 from django.urls import path, include
 from app02.views.account import views
+from app02.views.backend import views2
 
 urlpatterns = [
     # 注册
@@ -17,5 +18,7 @@ urlpatterns = [
     # 退出登录
     path('logout/', views.logout, name='logout'),
     # 后台管理首页
-    path('backend/', views.backend, anme='backend')
+    path('backend/', views2.backend, name='backend'),
+    # 创建项目
+    path('/create/project/', views2.create_project, name='create_project'),
 ]
