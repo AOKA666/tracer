@@ -20,5 +20,5 @@ urlpatterns = [
     # 后台管理首页
     path('backend/', views2.backend, name='backend'),
     # 创建项目
-    path('/create/project/', views2.create_project, name='create_project'),
+    path('create/project/', views2.create_project, name='create_project'),
 ]

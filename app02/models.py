@@ -35,7 +35,7 @@ class Transaction(models.Model):
     price = models.ForeignKey(PriceStrategy, on_delete=models.CASCADE)
     payment = models.SmallIntegerField(verbose_name='实际支付')
     start_time = models.DateTimeField('开始时间', auto_now_add=True)
-    end_time = models.DateTimeField('结束时间')
+    end_time = models.DateTimeField('结束时间', null=True, blank=True)
     order_num = models.CharField(verbose_name='订单号', max_length=128)
 
     def __str__(self):

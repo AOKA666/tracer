@@ -3,6 +3,7 @@ from django.shortcuts import render, HttpResponse, redirect
 from app02.forms import RegisterForm, SendSmsForm, LoginSmsForm, LoginForm
 from app02 import models
 from django.db.models import Q
+from app02.utils.common import init_user_transaction
 
 
 def register(request):
@@ -14,6 +15,9 @@ def register(request):
             # 表单验证通过
             print(form.cleaned_data)
             form.save()
+            phone = request.POST.get("phone")
+            user = models.UserInfo.objects.filter(phone=phone).first()
+            init_user_transaction(user)
             ret["url"] = '/app02/login'
         else:
             # 表单验证失败
