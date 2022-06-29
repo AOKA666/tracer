@@ -21,4 +21,6 @@ urlpatterns = [
     path('backend/', views2.backend, name='backend'),
     # 创建项目
     path('create/project/', views2.create_project, name='create_project'),
+    # 判断能够继续创建项目
+    path('check/eligibility/', views2.eligibility, name='eligibility')
 ]
