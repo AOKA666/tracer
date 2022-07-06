@@ -50,7 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'app02.middleware.account.LoginMiddleware',
+    'app01.middleware.account.LoginMiddleware',
 ]
 
 ROOT_URLCONF = 'tracer.urls'
@@ -148,6 +148,15 @@ CACHES = {
     }
 }
 
+WHITE_REGEX_URL_LIST = [
+    '/app01/register/',
+    '/app01/send/sms/',
+    '/app01/login/',
+    '/app01/get/img/',
+    '/app01/index/',
+    '/app01/logout',
+    '/app01/login/sms/'
+]
 
 
 

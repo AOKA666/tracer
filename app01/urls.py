@@ -1,6 +1,6 @@
-from django.contrib import admin
-from django.urls import path,include
+from django.urls import path
 from app01.views.account import views
+from app01.views import project
 
 urlpatterns = [
     # 注册
@@ -16,5 +16,9 @@ urlpatterns = [
     # 网站首页
     path('index/', views.index, name='index'),
     # 退出登录
-    path('logout/', views.logout, name='logout')
+    path('logout/', views.logout, name='logout'),
+
+
+    # 项目管理
+    path('project/list/', project.project_list, name='project_list') 
 ]
