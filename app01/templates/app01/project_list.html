@@ -2,6 +2,67 @@
 
 {% block body %}
     <div class="container-fluid">
-        <span class="glyphicon glyphicon-plus"></span> <a href="javascript:">新建项目</a>
+    <span class="glyphicon glyphicon-plus"></span> <a href="javascript:" data-toggle="modal" data-target="#myModal" id="canCreate">新建项目</a>
     </div>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">创建新项目</h4>
+            </div>
+            <div class="modal-body">
+              <div class="container-fluid">
+                  <form id="projectForm">
+                      {% for field in form %}
+                          {% csrf_token %}
+                          <div class="form-group">
+                              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                              {{ field }}
+                              <span class="error-msg"></span>
+                          </div>
+                      {% endfor %}
+                  </form>
+              </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="cancel">取消</button>
+                <button type="button" class="btn btn-primary" id="create_project">创建</button>
+            </div>
+        </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script>
+        $(function () {
+            bindSubmitEvent();
+            clearMsg();
+        })
+        function bindSubmitEvent(){
+            $("#create_project").click(function () {
+                $.ajax({
+                    url: "{% url 'app01:project_list' %}",
+                    type: 'post',
+                    dataType: 'json',
+                    data: $("#projectForm").serialize(),
+                    success: function (ret) {
+                        console.log(ret);
+                        if (ret.status===0){
+                            $.each(ret.msg, function (key, value) {
+                                $("#id_"+key).next().html(value);
+                            })
+                        }
+                    }
+                })
+            })
+        }
+        function clearMsg() {
+            $("#cancel").click(function () {
+                $(".error-msg").each(function () {
+                    $(this).empty();
+                })
+            })
+        }
+    </script>
 {% endblock %}

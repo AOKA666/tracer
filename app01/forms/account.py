@@ -7,15 +7,7 @@ from app01 import models
 from django_redis import get_redis_connection
 from app01.utils.sms import send_sms_single
 from app01.utils.common import encoder
-
-
-class BootstrapForm:
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            field.widget.attrs["class"] = "form-control field"
-            field.widget.attrs["placeholder"] = '请输入'+field.label
-            field.error_messages['required'] = '此字段必须填写'
+from .bootstrap import BootstrapForm
 
 
 class RegisterForm(BootstrapForm, forms.ModelForm):
@@ -85,7 +77,7 @@ class SendSmsForm(forms.Form):
         super(SendSmsForm, self).__init__(*args, **kwargs)
         self.request = request
 
-    def clean_phone(self):        
+    def clean_phone(self):
         # 验证短信模板是否有问题
         tpl = self.request.GET.get("tpl")
         tpl_id = local_settings.SMS_TEMPLATE.get(tpl)
