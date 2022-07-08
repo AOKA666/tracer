@@ -11,7 +11,7 @@ class LoginMiddleware(MiddlewareMixin):
     def process_request(self, request):
         user_id = request.session.get("user_id")
         request.tracer = UserInfo.objects.filter(id=user_id).first()
-        """白名单，没有登录的用户都可以访问的url"""
+        """白名单,没有登录的用户都可以访问的url"""
         if request.path_info in settings.WHITE_REGEX_URL_LIST:
             return
         if not request.tracer:

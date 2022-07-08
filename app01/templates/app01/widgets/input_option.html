@@ -1,0 +1,8 @@
+{% if widget.wrap_label %}
+<label{% if widget.attrs.id %} for="{{ widget.attrs.id }}" class="color-select"{% endif %}>
+{% endif %}
+{% include "django/forms/widgets/input.html" %}
+<span class="cycle" style="display:inline-block; width:40px; height: 40px; border-radius: 20px;background-color:{{widget.label}}"></span>
+</label>
+{% comment %} <span class="cycle" style="display:inline-block; width:20px; height: 20px; border-radius: 10px;background-color:{{widget.label}}"></span> {% endcomment %}
+
