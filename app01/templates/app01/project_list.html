@@ -11,11 +11,6 @@
         .color-list{
             display: inline-block;
         }
-        {% comment %} .project-list{
-            display: flex;
-            flex-direction: row;
-
-        } {% endcomment %}
     </style>
 {% endblock %}
 {% block body %}
@@ -32,8 +27,8 @@
                 <div class="modal-body">
                     <div class="container-fluid">
                         <form id="projectForm">
+                            {% csrf_token %}
                             {% for field in form %}
-                                {% csrf_token %}
                                 <div class="form-group">
                                     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                                     {{ field }}
@@ -50,42 +45,69 @@
             </div>
         </div>
     </div>
-</div>
-    <div class="panel panel-default project-list" style="height:200px;">
+    <div class="panel panel-default" style="height:300px;">
         <div class="panel-heading">星标项目</div>
         <div class="panel-body">
-            {% for item in project_list.star %}
-            <div class="panel panel-default">
-                <div class="panel-body" style="background-color:{{item.project.get_color_display}}">
-                {{ item.project.name }}
-                </div>
-                <div class="panel-footer">{{ item.project.creator.username }}</div>
+            {% for item in project_display.star %}
+            <div class="col-md-2">
+                <a href="{% url 'app01:dashboard' item.project.id %}">
+                    <div class="panel panel-default">
+                        <div class="panel-body" style="background-color:{{item.project.get_color_display}};height:150px;">
+                        {{ item.project.name }}
+                        </div>
+                        <div class="panel-footer">
+                            <a href="{% url 'app01:cancel_star' item.project_type item.project.id %}">
+                                <span class="glyphicon glyphicon-star star"></span>
+                            </a>
+                             {{ item.project.creator.username }}
+                            <div class="pull-right"><span class="glyphicon glyphicon-user"></span> {{ item.project.join_count }}</div>
+                        </div>
+                    </div>
+                </a>
             </div>
             {% endfor %}
         </div>
     </div>
-    <div class="panel panel-default project-list" style="height:200px;">
+    <div class="panel panel-default" style="height:300px;">
         <div class="panel-heading">我创建的项目</div>
         <div class="panel-body">
-            {% for item in project_list.create %}
-            <div class="panel panel-default">
-                <div class="panel-body" style="background-color:{{item.get_color_display}}">
-                {{ item.name }}
-                </div>
-                <div class="panel-footer">{{ item.creator.username }}</div>
+            {% for item in project_display.create %}
+            <div class="col-md-2">
+                <a href="{% url 'app01:dashboard' item.id %}">
+                    <div class="panel panel-default">
+                        <div class="panel-body" style="background-color:{{item.get_color_display}};height:150px;">
+                        {{ item.name }}
+                        </div>
+                        <div class="panel-footer">
+                            <a href="{% url 'app01:star' 'my' item.id %}">
+                                <span class="glyphicon glyphicon-star star"></span>
+                            </a>
+                             {{ item.creator.username }}
+                            <div class="pull-right"><span class="glyphicon glyphicon-user"></span> {{ item.join_count }}</div>
+                        </div>
+                    </div>
+                </a>
             </div>
             {% endfor %}
         </div>
     </div>
-    <div class="panel panel-default project-list" style="height:200px;">
+    <div class="panel panel-default" style="height:300px;">
         <div class="panel-heading">我参与的项目</div>
         <div class="panel-body">
-            {% for item in project_list.join %}
-            <div class="panel panel-default">
-                <div class="panel-body" style="background-color:{{item.get_color_display}}">
-                {{ item.name }}
+            {% for item in project_display.join %}
+            <div class="col-md-2">
+                <div class="panel panel-default">
+                    <div class="panel-body" style="background-color:{{item.get_color_display}};height:150px;">
+                    {{ item.name }}
+                    </div>
+                    <div class="panel-footer">
+                        <a href="{% url 'app01:star' 'join' item.id %}">
+                            <span class="glyphicon glyphicon-star star"></span>
+                        </a>
+                        {{ item.creator.username }}
+                        <div class="pull-right"><span class="glyphicon glyphicon-user"></span> {{ item.join_count }}</div>
+                    </div>
                 </div>
-                <div class="panel-footer">{{ item.creator.username }}</div>
             </div>
             {% endfor %}
         </div>
@@ -111,6 +133,8 @@
                             $.each(ret.msg, function (key, value) {
                                 $("#id_"+key).next().html(value);
                             })
+                        }else{
+                            location.reload();
                         }
                     }
                 })

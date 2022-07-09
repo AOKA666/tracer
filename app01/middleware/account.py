@@ -25,3 +25,21 @@ class LoginMiddleware(MiddlewareMixin):
         if _object.end_time and _object.end_time<current_datetime:
             _object = models.Transaction.objects.filter(user=request.tracer, status=2).order_by("id").first()
         request.price_policy = _object
+
+
+    def process_view(self, request, view, args, kwargs):
+        # url是否以manage开头
+        print(kwargs)
+        if not request.path_info.startswith('/app01/manage/'):
+            return
+        # 判断是否是我创建的
+        project_id = kwargs.get("project_id")
+        project_obj = models.Project.objects.filter(id=project_id, creator=request.tracer).first()
+        if project_obj:
+            request.project = project_obj
+            return
+        project_user_obj = models.ProjectUser.objects.filter(project_id=project_id, user=request.tracer).first()
+        if project_user_obj:
+            request.project = project_user_obj.project
+            return
+        return redirect("app01:project_list")

@@ -49,15 +49,22 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">项目<span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
+                            <li>我创建的项目</li>
+                            {% for item in request.tracer.project_set.all %}
+                                <li><a href="{% url 'app01:dashboard' item.id %}">{{ item.name }}</a></li>
+                            {% endfor %}
                         <li role="separator" class="divider"></li>
-                        <li><a href="#">Separated link</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">One more separated link</a></li>
+                            <li>我参与的项目</li>
+                            {% for item in request.tracer.projectuser_set.all %}
+                                <li><a href="{% url 'app01:dashboard' item.id %}">{{ item.name }}</a></li>
+                            {% endfor %}
                         </ul>
                     </li>
+                    {% if request.project %}
+                    <li><a href="#">史蒂夫</a></li>
+                    <li><a href="#">就开始搞</a></li>
+                    <li><a href="#">哦哦</a></li>
+                    {% endif %}
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="#">工作台</a></li>

@@ -61,7 +61,7 @@ class Project(models.Model):
     name = models.CharField(verbose_name='项目名', max_length=32)
     color = models.SmallIntegerField(verbose_name='颜色', choices=color_choices, default=3)
     desc = models.CharField(verbose_name='项目描述', max_length=255, null=True, blank=True)
-    use_spance = models.IntegerField(verbose_name='项目已用空间', default=0)
+    use_space = models.IntegerField(verbose_name='项目已用空间', default=0)
     star = models.BooleanField(verbose_name='星标', default=False)
 
     join_count = models.SmallIntegerField(verbose_name='参与人数', default=1)

@@ -3,13 +3,16 @@ from .bootstrap import BootstrapForm
 from django import forms
 from django.forms import RadioSelect
 
+
 class ColorSelect(RadioSelect):
     input_type = 'radio'
     template_name = 'app01/widgets/radio.html'
     option_template_name = 'app01/widgets/color_option.html'
 
+
 class ProjectForm(BootstrapForm, forms.ModelForm):
     bootstrap_exclude = ['color']
+
     class Meta:
         model = models.Project
         fields = ['name', 'color', 'desc']
@@ -17,6 +20,7 @@ class ProjectForm(BootstrapForm, forms.ModelForm):
             'desc': forms.Textarea,
             'color': ColorSelect
         }
+
     def __init__(self, request, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.request = request
