@@ -1,5 +1,14 @@
 {% extends "app01/layout/base.html" %}
+{% load static %}
 
+
+{% block mycss %}
+    <style>
+        img{
+            width: 100%;
+        }
+    </style>
+{% endblock %}
 {% block body %}
-    <h1>首页</h1>
+    <img src="{% static 'img/home.png' %}">
 {% endblock %}

@@ -1,0 +1,17 @@
+<ul class="dropdown-menu">
+    {% if my %}
+        <li><a href="javascript:"><b><i class="fa-brands fa-angellist"></i> 我创建的项目</b></a></li>
+        {% for item in my %}
+            <li><a href="{% url 'app01:dashboard' item.id %}">{{ item.name }}</a></li>
+        {% endfor %}
+    {% endif %}
+    {% if join %}
+        <li role="separator" class="divider"></li>
+        <li><a href="javascript:"><b><i class="fa-regular fa-hand"></i> 我参与的项目</b></a></li>
+        {% for item in join %}
+            <li><a href="{% url 'app01:dashboard' item.id %}">{{ item.name }}</a></li>
+        {% endfor %}
+    {% endif %}
+    <li role="separator" class="divider"></li>
+    <li><a href="{% url 'app01:project_list' %}"><b><span class="glyphicon glyphicon-list"></span> 所有项目</b></a></li>
+</ul>

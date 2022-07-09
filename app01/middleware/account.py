@@ -29,7 +29,6 @@ class LoginMiddleware(MiddlewareMixin):
 
     def process_view(self, request, view, args, kwargs):
         # url是否以manage开头
-        print(kwargs)
         if not request.path_info.startswith('/app01/manage/'):
             return
         # 判断是否是我创建的
@@ -38,6 +37,7 @@ class LoginMiddleware(MiddlewareMixin):
         if project_obj:
             request.project = project_obj
             return
+        # 判断是否是我参与的
         project_user_obj = models.ProjectUser.objects.filter(project_id=project_id, user=request.tracer).first()
         if project_user_obj:
             request.project = project_user_obj.project

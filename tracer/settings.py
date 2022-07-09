@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'app01.apps.App01Config',
     'app02.apps.App02Config',
 ]
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

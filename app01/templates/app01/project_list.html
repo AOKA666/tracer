@@ -11,12 +11,32 @@
         .color-list{
             display: inline-block;
         }
+        .add{
+            margin-bottom: 10px;
+        }
+        .project_content{
+            color: white;
+            text-align: center;
+            height: 150px;
+        }
+        .project-link:hover{
+            text-decoration: none;
+        }
+        .item{
+            transition: all 0.3s;
+        }
+        .item:hover{
+            transform: scale(1.1);
+            border: 2px solid #ffd700;
+        }
     </style>
 {% endblock %}
 {% block body %}
 <div class="container-fluid">
-    <span class="glyphicon glyphicon-plus"></span> <a href="javascript:" data-toggle="modal" data-target="#myModal" id="canCreate">新建项目</a>
-    
+    <div class="add">
+        <span class="glyphicon glyphicon-plus"></span>
+        <a href="javascript:" data-toggle="modal" data-target="#myModal" id="canCreate">新建项目</a>
+    </div>
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -46,67 +66,69 @@
         </div>
     </div>
     <div class="panel panel-default" style="height:300px;">
-        <div class="panel-heading">星标项目</div>
+        <div class="panel-heading"><i class="fa-solid fa-star"></i> 星标项目</div>
         <div class="panel-body">
             {% for item in project_display.star %}
-            <div class="col-md-2">
-                <a href="{% url 'app01:dashboard' item.project.id %}">
-                    <div class="panel panel-default">
-                        <div class="panel-body" style="background-color:{{item.project.get_color_display}};height:150px;">
+            <div class="col-md-3">
+                <div class="panel panel-default item">
+                    <a href="{% url 'app01:dashboard' item.project.id %}" class="project-link">
+                        <div class="panel-body project_content" style="background-color:{{item.project.get_color_display}};height:150px;">
                         {{ item.project.name }}
                         </div>
                         <div class="panel-footer">
-                            <a href="{% url 'app01:cancel_star' item.project_type item.project.id %}">
+                            <a href="{% url 'app01:cancel_star' item.project_type item.project.id %}" style="color:#ffd700;">
                                 <span class="glyphicon glyphicon-star star"></span>
                             </a>
-                             {{ item.project.creator.username }}
+                            {{ item.project.creator.username }}
                             <div class="pull-right"><span class="glyphicon glyphicon-user"></span> {{ item.project.join_count }}</div>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                </div>
             </div>
             {% endfor %}
         </div>
     </div>
     <div class="panel panel-default" style="height:300px;">
-        <div class="panel-heading">我创建的项目</div>
+        <div class="panel-heading"><i class="fa-regular fa-folder-open"></i> 我创建的项目</div>
         <div class="panel-body">
             {% for item in project_display.create %}
-            <div class="col-md-2">
-                <a href="{% url 'app01:dashboard' item.id %}">
-                    <div class="panel panel-default">
-                        <div class="panel-body" style="background-color:{{item.get_color_display}};height:150px;">
+            <div class="col-md-3">       
+                <div class="panel panel-default item">
+                    <a href="{% url 'app01:dashboard' item.id %}" class="project-link">
+                        <div class="panel-body project_content" style="background-color:{{item.get_color_display}};">
                         {{ item.name }}
                         </div>
                         <div class="panel-footer">
-                            <a href="{% url 'app01:star' 'my' item.id %}">
+                            <a href="{% url 'app01:star' 'my' item.id %}" style="color:#cdcdcd;">
                                 <span class="glyphicon glyphicon-star star"></span>
                             </a>
-                             {{ item.creator.username }}
+                                {{ item.creator.username }}
                             <div class="pull-right"><span class="glyphicon glyphicon-user"></span> {{ item.join_count }}</div>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                </div>                
             </div>
             {% endfor %}
         </div>
     </div>
     <div class="panel panel-default" style="height:300px;">
-        <div class="panel-heading">我参与的项目</div>
+        <div class="panel-heading"><i class="fa-solid fa-handshake-angle"></i> 我参与的项目</div>
         <div class="panel-body">
             {% for item in project_display.join %}
-            <div class="col-md-2">
-                <div class="panel panel-default">
-                    <div class="panel-body" style="background-color:{{item.get_color_display}};height:150px;">
-                    {{ item.name }}
-                    </div>
-                    <div class="panel-footer">
-                        <a href="{% url 'app01:star' 'join' item.id %}">
-                            <span class="glyphicon glyphicon-star star"></span>
-                        </a>
-                        {{ item.creator.username }}
-                        <div class="pull-right"><span class="glyphicon glyphicon-user"></span> {{ item.join_count }}</div>
-                    </div>
+            <div class="col-md-3">             
+                <div class="panel panel-default item">
+                    <a href="{% url 'app01:dashboard' item.id %}" class="project-link">
+                        <div class="panel-body project_content" style="background-color:{{item.get_color_display}};">
+                        {{ item.name }}
+                        </div>
+                        <div class="panel-footer">
+                            <a href="{% url 'app01:star' 'join' item.id %}">
+                                <span class="glyphicon glyphicon-star star"></span>
+                            </a>
+                            {{ item.creator.username }}
+                            <div class="pull-right"><span class="glyphicon glyphicon-user"></span> {{ item.join_count }}</div>
+                        </div>
+                    </a>
                 </div>
             </div>
             {% endfor %}
@@ -143,6 +165,9 @@
         function clearMsg() {
             $("#cancel").click(function () {
                 $(".error-msg").each(function () {
+                    $(this).empty();
+                })
+                $("input").each(function(){
                     $(this).empty();
                 })
             })

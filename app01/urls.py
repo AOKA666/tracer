@@ -32,8 +32,8 @@ urlpatterns = [
         re_path(r'^dashboard/$', manage.dashboard, name='dashboard'),
         re_path(r'^issues/$', manage.issues, name='issues'),
         re_path(r'^statistics/$', manage.statistics, name='statistics'),
-        re_path(r'^dashboard/$', manage.file, name='file'),
-        re_path(r'^dashboard/$', manage.wiki, name='wiki'),
-        re_path(r'^dashboard/$', manage.settings, name='settings'),
+        re_path(r'^file/$', manage.file, name='file'),
+        re_path(r'^wiki/$', manage.wiki, name='wiki'),
+        re_path(r'^settings/$', manage.settings, name='settings'),
     ]))
 ]
