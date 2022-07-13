@@ -50,6 +50,7 @@ class Transaction(models.Model):
 
 
 class Project(models.Model):
+    """创建的项目"""
     color_choices = (
         (1, "#fa5151"),
         (2, "#c87d2f"),
@@ -70,9 +71,21 @@ class Project(models.Model):
 
 
 class ProjectUser(models.Model):
+    """参加的项目"""
     user = models.ForeignKey(verbose_name='用户', to='UserInfo', related_name='projects', on_delete=models.CASCADE)
     project = models.ForeignKey(verbose_name='项目', to='Project', on_delete=models.CASCADE)
     inviter = models.ForeignKey(verbose_name='邀请者', to='UserInfo', related_name='invites', on_delete=models.CASCADE)
     star = models.BooleanField(verbose_name='星标', default=False)
     create_datetime = models.DateTimeField(verbose_name='创建时间', auto_now_add=True)
 
+
+class Wiki(models.Model):
+    """文档库"""
+    title = models.CharField(verbose_name="标题", max_length=32)
+    content = models.TextField(verbose_name="内容")
+    project = models.ForeignKey("Project", verbose_name="项目", on_delete=models.CASCADE)
+    parent = models.ForeignKey("self", verbose_name="父文章", on_delete=models.CASCADE, related_name="children", blank=True, null=True)
+    depth = models.SmallIntegerField(verbose_name="文档层级", default=1)
+
+    def __str__(self):
+        return self.title

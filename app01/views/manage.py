@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from app01 import models
 
 
 def dashboard(request, project_id):
@@ -15,10 +16,6 @@ def statistics(request, project_id):
 
 def file(request, project_id):
     return render(request, 'app01/file.html')
-
-
-def wiki(request, project_id):
-    return render(request, 'app01/wiki.html')
 
 
 def settings(request, project_id):
