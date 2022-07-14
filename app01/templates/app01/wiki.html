@@ -48,7 +48,9 @@
         {% block content-right %}
         <div class="col-sm-9 content-right">
             {% if wiki_obj %}
-                {{ wiki_obj.content }}
+                <div id="previewEditor">
+                    <textarea>{{ wiki_obj.content }}</textarea>
+                </div>
             {% else %}
             <div class="display">
                 <h3>《{{ request.project.name }}》知识文档库</h3>
@@ -61,19 +63,17 @@
 </div>
 {% endblock %}
 {% block script %}
-    <script src="{% static 'plugin/editor.md-master/src/editormd.js' %}"></script>
-    <script src="{% static 'plugin/editor.md-master/lib/flowchart.min.js' %}"></script>
-    <script src="{% static 'plugin/editor.md-master/lib/jquery.flowchart.min.js' %}"></script>
-    <script src="{% static 'plugin/editor.md-master/lib/marked.min.js' %}"></script>
-    <script src="{% static 'plugin/editor.md-master/lib/prettify.min.js' %}"></script>
-    <script src="{% static 'plugin/editor.md-master/lib/raphael.min.js' %}"></script>
-    <script src="{% static 'plugin/editor.md-master/lib/sequence-diagram.min.js' %}"></script>
-    <script src="{% static 'plugin/editor.md-master/lib/underscore.min.js' %}"></script>
-    <script src="{% static 'plugin/editor.md-master/lib/codemirror/lib/codemirror.js' %}"></script>
+    <script src="{% static 'plugin/editor.md/editormd.min.js' %}"></script>
+    <script src="{% static 'plugin/editor.md/lib/flowchart.min.js' %}"></script>
+    <script src="{% static 'plugin/editor.md/lib/jquery.flowchart.min.js' %}"></script>
+    <script src="{% static 'plugin/editor.md/lib/marked.min.js' %}"></script>
+    <script src="{% static 'plugin/editor.md/lib/prettify.min.js' %}"></script>
+    <script src="{% static 'plugin/editor.md/lib/raphael.min.js' %}"></script>
+    <script src="{% static 'plugin/editor.md/lib/underscore.min.js' %}"></script>
     <script>
         $(function(){
             initCategory();
-            initEditor();
+            initEditorPreview();
         })
         function initCategory(){
             let WIKI_DETAIL_URL = "{% url 'app01:wiki' request.project.id %}"; 
@@ -97,12 +97,10 @@
                     }
                 })
         }
-        function initEditor(){
-            editormd('editor', {
-                placeholder: "请输入内容",
-                height: 500,
-                path: "" // lib文件夹所在的路径
-            }) 
+        function initEditorPreview(){
+            editormd.markdownToHTML("previewEditor", {
+                htmlDecode: 'style,script,iframe'
+            })
         }    
     </script>
 {% endblock %}

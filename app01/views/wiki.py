@@ -31,7 +31,6 @@ def wiki_list(request, project_id):
     wiki_list = models.Wiki.objects.filter(project_id=project_id).values(
         "id", "title", "parent_id"
     ).order_by('depth', 'id')
-    print(wiki_list)
     return JsonResponse({"status": True, "data": list(wiki_list)})
 
 
