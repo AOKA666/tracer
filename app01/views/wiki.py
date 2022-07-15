@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect, HttpResponse
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from app01.forms.wiki import WikiForm
 from app01 import models
+from app01.utils.tencent.cos import cos_upload_file
 
 
 def wiki(request, project_id):
@@ -38,3 +40,11 @@ def wiki_edit(request, project_id, wiki_id):
     wiki = models.Wiki.objects.filter(id=wiki_id, project_id=project_id).first()
     form = WikiForm(request, instance=wiki)
     return render(request, "app01/wiki_add.html", {"form": form})
+
+
+@csrf_exempt
+def upload(request, project_id):
+    project = models.Project.objects.get(id=project_id)
+    img = request.FILES
+    print(img)
+    # cos_upload_file(project.bucket)

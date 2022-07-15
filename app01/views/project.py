@@ -1,7 +1,9 @@
+import time
 from django.shortcuts import render, redirect
 from app01.forms.project import ProjectForm
 from django.http import JsonResponse
 from app01 import models
+from app01.utils.tencent.cos import create_bucket
 
 
 def project_list(request):
@@ -26,7 +28,10 @@ def project_list(request):
         return render(request, 'app01/project_list.html', {'form': form, 'project_display': project_display})
     form = ProjectForm(request, request.POST)
     if form.is_valid():
+        bucket = "{}-{}-1307733527".format(request.tracer.phone, str(int(time.time())))
+        create_bucket(bucket_name=bucket)
         form.instance.creator = request.tracer
+        form.instance.bucket = bucket
         form.save()
         return JsonResponse({"status": 1})
     return JsonResponse({"status": 0, "msg": form.errors})

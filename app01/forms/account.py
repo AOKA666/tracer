@@ -5,7 +5,7 @@ from django.core.validators import RegexValidator
 from tracer import local_settings
 from app01 import models
 from django_redis import get_redis_connection
-from app01.utils.sms import send_sms_single
+from app01.utils.tencent.sms import send_sms_single
 from app01.utils.common import encoder
 from .bootstrap import BootstrapForm
 

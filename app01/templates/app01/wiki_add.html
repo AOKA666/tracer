@@ -33,7 +33,10 @@
             editormd('editor', {
                 placeholder: "请输入内容",
                 height: 500,
-                path: "{% static 'plugin/editor.md/lib/' %}"
+                path: "{% static 'plugin/editor.md/lib/' %}",
+                imageUpload: true,
+                imageFormats   : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                imageUploadURL : "{% url 'app01:wiki_upload' request.project.id %}",
             })
         }
     </script>

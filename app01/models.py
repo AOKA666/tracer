@@ -69,6 +69,7 @@ class Project(models.Model):
     creator = models.ForeignKey(verbose_name='创建者', to='UserInfo', on_delete=models.CASCADE)
     create_datetime = models.DateTimeField(verbose_name='创建时间', auto_now_add=True)
 
+    bucket = models.CharField(verbose_name='cos桶', max_length=128)
 
 class ProjectUser(models.Model):
     """参加的项目"""
