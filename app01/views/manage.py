@@ -14,9 +14,5 @@ def statistics(request, project_id):
     return render(request, 'app01/statistics.html')
 
 
-def file(request, project_id):
-    return render(request, 'app01/file.html')
-
-
 def settings(request, project_id):
     return render(request, 'app01/settings.html')

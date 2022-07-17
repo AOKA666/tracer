@@ -1,7 +1,7 @@
 from django.urls import path, re_path, include
 from app01.views.account import views
 from app01.views import project
-from app01.views import manage, wiki
+from app01.views import manage, wiki, file
 
 urlpatterns = [
     # 注册
@@ -32,11 +32,11 @@ urlpatterns = [
         re_path(r'^dashboard/$', manage.dashboard, name='dashboard'),
         re_path(r'^issues/$', manage.issues, name='issues'),
         re_path(r'^statistics/$', manage.statistics, name='statistics'),
-        re_path(r'^file/$', manage.file, name='file'),
+        re_path(r'^file/$', file.file, name='file'),
         re_path(r'^wiki/$', wiki.wiki, name='wiki'),
         re_path(r'^wiki/add/$', wiki.wiki_add, name='wiki_add'),
         re_path(r'^wiki/edit/(?P<wiki_id>\d+)/$', wiki.wiki_edit, name='wiki_edit'),
-        # re_path(r'^wiki/delete/(?P<wiki_id>\d+)/$', wiki.wiki_delete, name='wiki_delete'),
+        re_path(r'^wiki/delete/(?P<wiki_id>\d+)/$', wiki.wiki_delete, name='wiki_delete'),
         re_path(r'^wiki/list/$', wiki.wiki_list, name='wiki_list'),
         re_path(r'^wiki/upload/$', wiki.upload, name='wiki_upload'),
         re_path(r'^settings/$', manage.settings, name='settings'),

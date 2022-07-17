@@ -21,6 +21,9 @@
             text-align: center;
             margin-top: 20px;
         }
+        .wiki-active{
+            background-color: #f5f5f5;
+        }
     </style>
 {% endblock %}
 
@@ -36,14 +39,19 @@
                 {% if wiki_obj %}
                     <i class="fa fa-pencil text-primary" aria-hidden="true"></i> 
                         <a href="{% url 'app01:wiki_edit' project_id=request.project.id wiki_id=wiki_obj.id %}">编辑</a>
-                    <i class="fa fa-trash text-danger" aria-hidden="true"></i> <a href="{% url 'app01:wiki_add' request.project.id %}">删除</a>
+                    <i class="fa fa-trash text-danger" aria-hidden="true"></i>
+                        <a class="wiki-delete" href="{% url 'app01:wiki_delete' project_id=request.project.id wiki_id=wiki_obj.id %}">删除</a>
                 {% endif %}
             </div>
         </div>
     </div>
     <div class="panel-body">
         <div class="col-sm-3 content-left">
+            {% if wiki_obj %}
+            <ul id="wiki_list" class="has-select-wiki" select="{{ wiki_obj.title }}"></ul>
+            {% else %}
             <ul id="wiki_list"></ul>
+            {% endif %}
         </div>
         {% block content-right %}
         <div class="col-sm-9 content-right">
@@ -74,33 +82,48 @@
         $(function(){
             initCategory();
             initEditorPreview();
+            hintOnDelete();
+
         })
         function initCategory(){
             let WIKI_DETAIL_URL = "{% url 'app01:wiki' request.project.id %}"; 
-                $.ajax({
-                    url: "{% url 'app01:wiki_list' request.project.id %}",
-                    type: 'GET',
-                    dataType: 'json',
-                    success: function(ret){
-                        $.each(ret.data, function(index,value){
-                            let href = WIKI_DETAIL_URL + "?id=" + value.id;
-                            console.log(value.parent_id);
-                            if (!value.parent_id){
-                                let li = $("<li>").attr("id", "id_"+value.id).append($("<a>").attr("href", href).text(value.title));
-                                $("#wiki_list").append(li).append("<ul>");
-                            }else{
-                                let li = $("<li>").attr("id", "id_"+value.id).append($("<a>").attr("href", href).text(value.title));
-                                $("#id_"+value.parent_id).next().append(li).append("<ul>");
-                            }
-                        })
-                        
-                    }
-                })
+            $.ajax({
+                url: "{% url 'app01:wiki_list' request.project.id %}",
+                type: 'GET',
+                dataType: 'json',
+                success: function(ret){
+                    $.each(ret.data, function(index,value){
+                        let href = WIKI_DETAIL_URL + "?id=" + value.id;
+                        if (!value.parent_id){
+                            let li = $("<li>").attr("id", "id_"+value.id).append($("<a>").attr("href", href).text(value.title));
+                            $("#wiki_list").append(li).append("<ul>");
+                        }else{
+                            let li = $("<li>").attr("id", "id_"+value.id).append($("<a>").attr("href", href).text(value.title));
+                            $("#id_"+value.parent_id).next().append(li).append("<ul>");
+                        }
+                    })
+                    showSelect();
+                }
+            })
         }
         function initEditorPreview(){
             editormd.markdownToHTML("previewEditor", {
                 htmlDecode: 'style,script,iframe'
             })
-        }    
+        }
+        function hintOnDelete() {
+            $(".wiki-delete").each(function () {
+                $(this).click(function () {
+                    return confirm("确定要删除吗？");
+                })
+            })
+        }
+        function showSelect() {
+            $.each($(".has-select-wiki li"), function (index, item) {
+                if($(item).children()[0].text===$(".has-select-wiki").attr("select")){
+                    $(item).addClass("wiki-active");
+                }
+            })
+        }
     </script>
 {% endblock %}

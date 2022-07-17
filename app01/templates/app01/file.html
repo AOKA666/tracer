@@ -1,6 +1,98 @@
 {% extends 'app01/layout/manage.html' %}
 
 
+{% block mycss %}
+    <style>
+        .file-list-head {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-<h1>file</h1>
+    <div class="bs-example" data-example-id="table-within-panel">
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">
+                <div class="file-list-head">
+                    <div>文件列表</div>
+                    <div>
+                        <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#addFile">
+                            <i class="fa fa-plus" aria-hidden="true"></i> 添加文件
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>文件名称</th>
+                    <th>文件大小</th>
+                    <th>最近更新者</th>
+                    <th>最近更新时间</th>
+                    <th>更多操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for file_obj in file_list %}
+                    <tr>
+                        <td>{{ file_obj.name }}</td>
+                        <td>{{ file_obj.file_size }}</td>
+                        <td>{{ file_obj.update_user.username }}</td>
+                        <td>{{ file_obj.update_time }}</td>
+                        <td><a href="#">编辑</a> | <a href="#">删除</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal fade" id="addFile" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Modal title</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="add_file">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="form-group">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                            </div>
+                        {% endfor %}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="addFileSubmit">确定</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script>
+        $(function () {
+            bindAddEvent();
+        })
+        function bindAddEvent() {
+            $.ajax({
+                url: "",
+                type: "post",
+                data: $("#add_file").serialize(),
+                dataType: "json",
+                success: function (ret) {
+                    location.reload();
+                }
+            })
+        }
+    </script>
 {% endblock %}
