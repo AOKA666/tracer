@@ -32,7 +32,12 @@ urlpatterns = [
         re_path(r'^dashboard/$', manage.dashboard, name='dashboard'),
         re_path(r'^issues/$', manage.issues, name='issues'),
         re_path(r'^statistics/$', manage.statistics, name='statistics'),
+
         re_path(r'^file/$', file.file, name='file'),
+        re_path(r'^file/delete/$', file.delete, name='delete_file'),
+        re_path(r'^file/cos/credential/$', file.cos_credential, name='cos_credential'),
+        re_path(r'^file/cos/post/$', file.cos_post, name='cos_post'),
+        
         re_path(r'^wiki/$', wiki.wiki, name='wiki'),
         re_path(r'^wiki/add/$', wiki.wiki_add, name='wiki_add'),
         re_path(r'^wiki/edit/(?P<wiki_id>\d+)/$', wiki.wiki_edit, name='wiki_edit'),
