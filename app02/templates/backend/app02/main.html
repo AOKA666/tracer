@@ -1,0 +1,134 @@
+{% extends "layout/app02/base.html" %}
+
+
+{% block mycss %}
+    <style>
+        .project-content{
+            height: 200px;
+        }
+        .small-project{
+            height: 100px;
+        }
+        .error{
+            color: red;
+        }
+        #canCreate{
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <span class="glyphicon glyphicon-plus"></span>
+        <a data-toggle="modal" data-target="#myModal" id="canCreate">创建新项目</a> <span class="error"></span><hr>
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">创建新项目</h4>
+              </div>
+              <div class="modal-body">
+                  <div class="container-fluid">
+                      <form id="projectForm">
+                          {% csrf_token %}
+                          <div class="form-group">
+                              <label for="title">项目名</label>
+                              <input type="text" class="form-control" id="title" name="title">
+                          </div>
+                          <div class="form-group">
+                              <label for="color">颜色</label>
+                              <input type="text" class="form-control" id="color" name="color">
+                          </div>
+                          <div class="form-group">
+                              <label for="des">描述</label>
+                              <textarea class="form-control" id="des" name="des"></textarea>
+                          </div>
+                      </form>
+                  </div>
+                </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="create_project">创建</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">星标项目</div>
+          <div class="panel-body project-content">
+
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">我创建的项目</div>
+          <div class="panel-body project-content">
+              {% for project in create_project_list %}
+              <div class="col-md-2">
+                <div class="panel panel-default">
+                  <div class="panel-body small-project" style="background-color: {{ project.color }}">
+                    Panel content
+                  </div>
+                  <div class="panel-footer">{{ project.name }}</div>
+                </div>
+              </div>
+              {% endfor %}
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">我参与的项目</div>
+          <div class="panel-body project-content">
+            {% for project in invited_project_list %}
+              <div class="col-md-2">
+                <div class="panel panel-default">
+                  <div class="panel-body small-project">
+                    Panel content
+                  </div>
+                  <div class="panel-footer">yanweijie</div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script>
+        $("#canCreate").click(function () {
+            let flag = true;
+            $.ajax({
+                url: '/app02/check/eligibility',
+                type: 'get',
+                dataType: 'json',
+                async: false,
+                success: function (ret) {
+                    console.log(ret);
+                    if(!ret){
+                        let html = '已达到创建新项目上限！若您想继续使用，请<a href="#">充值</a>'
+                        $(".error").html(html);
+                        flag = false;
+                    }
+                }
+            })
+            return flag;
+        })
+
+
+        $("#create_project").click(function () {
+            $.ajax({
+                url: '/app02/create/project/',
+                type: 'post',
+                data: $("#projectForm").serialize(),
+                dataType: 'json',
+                success: function (ret) {
+                    console.log(ret);
+                    if (ret.status===1){
+                        // 创建成功
+                        location.reload();
+                    }
+                }
+            })
+        })
+    </script>
+{% endblock %}

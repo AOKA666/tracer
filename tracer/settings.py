@@ -39,8 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app01.apps.App01Config',
+    'app02.apps.App02Config',
 ]
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -109,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -148,7 +148,16 @@ CACHES = {
 }
 
 
-
+# 登录白名单
+WHITE_REGEX_URL_LIST = [
+    '/app01/register/',
+    '/app01/send/sms/',
+    '/app01/login/',
+    '/app01/get/img/',
+    '/app01/index/',
+    '/app01/logout',
+    '/app01/login/sms/'
+]
 
 
 try:

@@ -1,6 +1,8 @@
+import uuid
+import datetime
 from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse, redirect
-from app01.forms import RegisterForm, SendSmsForm, LoginSmsForm, LoginForm
+from app01.forms.account import RegisterForm, SendSmsForm, LoginSmsForm, LoginForm
 from app01 import models
 from django.db.models import Q
 
@@ -13,7 +15,18 @@ def register(request):
         if form.is_valid():
             # 表单验证通过
             print(form.cleaned_data)
-            form.save()
+            instance = form.save()
+            # 注册完成自动生成交易记录
+            policy_obj = models.PricePolicy.objects.filter(category=1, title="个人免费版").first()
+            models.Transaction.objects.create(
+                status=2,
+                order=str(uuid.uuid4()),
+                user=instance,
+                price_policy=policy_obj,
+                count=0,
+                price=0,
+                start_time=datetime.datetime.now()
+            )
             ret["url"] = '/app01/login'
         else:
             # 表单验证失败
@@ -22,8 +35,8 @@ def register(request):
         return JsonResponse(ret)
     else:
         form = RegisterForm()
-    return render(request, 'layout/register.html', {'form': form})
-
+    return render(request, 'app01/register.html', {'form': form})
+    
 
 def send_sms(request):
     """发送短信"""
@@ -54,7 +67,9 @@ def login_sms(request):
         return JsonResponse(ret)
     else:
         form = LoginSmsForm()
-    return render(request, "layout/login_sms.html", {"form": form})
+
+    return render(request, "app01/login_sms.html", {"form": form})
+
 
 
 def login(request):
@@ -78,7 +93,9 @@ def login(request):
             print(form.errors)
     else:
         form = LoginForm(request)
-    return render(request, "layout/login.html", {"form": form})
+
+    return render(request, "app01/login.html", {"form": form})
+
 
 
 def get_img(request):
@@ -100,5 +117,7 @@ def logout(request):
     request.session.flush()
     return redirect("/app01/index")
 
+
 def index(request):
-    return render(request, "layout/index.html")
+    return render(request, "app01/index.html")
+

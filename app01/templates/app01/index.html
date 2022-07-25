@@ -1,0 +1,14 @@
+{% extends "app01/layout/base.html" %}
+{% load static %}
+
+
+{% block mycss %}
+    <style>
+        img{
+            width: 100%;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+    <img src="{% static 'img/home.jpeg' %}">
+{% endblock %}

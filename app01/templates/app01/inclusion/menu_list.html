@@ -1,0 +1,7 @@
+{% for data in data_list%}
+    {% if data.class %}
+        <li class="{{ data.class }}"><a href="{{ data.url }}">{{ data.title }}</a></li>
+    {% else %}
+        <li><a href="{{ data.url }}">{{ data.title }}</a></li>
+    {% endif %}
+{% endfor %}

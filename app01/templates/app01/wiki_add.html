@@ -1,0 +1,43 @@
+{% extends 'app01/wiki.html' %}
+{% load static %}
+
+
+{% block content-right %}
+<div class="col-sm-9 content-right">
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+            {% if field.name == 'content' %}
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                <div id="editor">{{field}}</div>
+                <span class="error-msg">{{ field.errors }}</span>
+            {% else %}
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+                <span class="error-msg">{{ field.errors }}</span>
+            {% endif %}
+        </div>
+        {% endfor %}
+        <button class="btn btn-primary">提交</button>
+    </form>
+</div>
+{% endblock %}
+{% block script %}
+    {{ block.super }}
+    <script>
+        $(function(){
+            initEditor();
+        })
+        function initEditor(){
+            editormd('editor', {
+                placeholder: "请输入内容",
+                height: 500,
+                path: "{% static 'plugin/editor.md/lib/' %}",
+                imageUpload: true,
+                imageFormats   : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                imageUploadURL : "{% url 'app01:wiki_upload' request.project.id %}",
+            })
+        }
+    </script>
+{% endblock %}

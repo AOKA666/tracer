@@ -21,4 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # 增加路由分发，命名空间
     path('app01/', include(('app01.urls', 'app01'), namespace='app01')),
+    path('app02/', include(('app02.urls', 'app01'), namespace='app02')),
+
 ]

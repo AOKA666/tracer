@@ -1,0 +1,140 @@
+{% extends "app01/layout/base.html" %}
+
+{% block mycss %}
+    <style>
+        .error-msg{
+            color: red;
+            position: absolute;
+            right: 20px;
+        }
+    </style>
+{% endblock %}
+
+
+{% block title %}短信登录{% endblock %}
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <h2 class="text-center">短信登录</h2>
+            <form id="loginForm">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group clearfix layout">
+                        <label for="{{ field.auto_id }}">{{ field.label }}</label>
+                        {% if field.name == 'code' %}
+                            <div class="row">
+                                <div class="col-md-6">{{ field }}<span class="error-msg"></span></div>
+                                <div class="col-md-6">
+                                    <input type="button" class="btn btn-default btn-block" id="get_sms" value="获取验证码">
+                                </div>
+                            </div>
+                        {% else %}
+                            {{ field }}
+                            <span class="error-msg"></span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <br>
+                <div class="form-group">
+                    <input type="button" class="btn btn-primary btn-block" id="login_btn" value="登录">
+                </div>
+                <div class="pull-right"><a href="{% url 'app01:login' %}">密码登录？</a></div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(function () {
+        // 发送验证码
+        bindSendSMSEvent();
+        // 移除边框红色错误提示
+        removeErrorBorder();
+        // 登录
+        bindLoginEvent();
+    })
+    // 发送验证码
+    let timer;
+    function bindSendSMSEvent(){           
+        $("#get_sms").click(function () {
+            $(".error-msg").empty();
+            // 未输入手机号
+            if (!$("#id_phone").val()){
+                alert("请输入手机号！")
+                return;
+            }
+            // 不能重复发送验证码
+            console.log(timer);
+            if (timer!==undefined){
+                return;
+            }              
+            let that = $(this);
+            $.ajax({
+                url: "{% url 'app01:send_sms' %}",
+                type: 'get',
+                dataType: 'json',
+                data: {'phone': $("#id_phone").val(),'tpl':'login'},
+                success: function (ret) {
+                    // 后台发送成功，显示倒计时
+                    console.log(ret);
+                    if (ret["status"]){
+                        // 调用页面倒计时的显示
+                        sendSmsReminder(that);
+                    }else{
+                        $.each(ret["msg"], function (key, value) {
+                            $("#id_"+key).next().text(value);
+                        })
+                    }
+                }
+            })
+
+        })
+    }
+    // 倒计时效果
+    function sendSmsReminder(self) {
+        let time = 60;
+        self.addClass("disabled");
+        timer = setInterval(function () {
+            time --;
+            self.val(time+"秒后重新获取");
+            if (time===0){
+                self.removeClass("disabled").val("获取验证码");
+                clearInterval(timer);
+                timer = undefined;
+            }
+        },1000)
+    }
+    // 登录
+    function bindLoginEvent() {
+        $("#login_btn").click(function () {
+            $(".error-msg").empty();
+            $.ajax({
+                url: '/app01/login/sms/',
+                type: 'post',
+                data: $("#loginForm").serialize(),
+                success: function (ret) {
+                    if(ret["status"]){
+                        location.href = ret["url"];
+                    }else{
+                        $.each(ret["msg"], function (key, value) {
+                            $("#id_"+key).next().text(value);
+                        })
+                    }
+                }
+            })
+        })
+    }
+    function removeErrorBorder(){
+        $.each($("input.field"), function(){
+            $(this).focus(function(){
+                let nid = $(this).prop("id");
+                let label = $("label[for='"+nid+"']");
+                $(label).parent().removeClass("has-error");
+            })
+        })
+    }
+</script>
+{% endblock %}
