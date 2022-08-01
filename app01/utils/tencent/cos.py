@@ -24,7 +24,7 @@ def create_bucket(bucket_name, region='ap-shanghai'):
         'CORSRule': [
             {
                 'AllowedOrigin': '*',
-                'AllowedMethod': ['GET', 'PUT', 'PATCH', 'HEAD', 'OPTION'],
+                'AllowedMethod': ['GET', 'PUT', 'POST', 'HEAD', 'DELETE'],
                 'AllowedHeader': '*',
                 'ExposeHeader': '*',
                 'MaxAgeSeconds': 500
@@ -32,7 +32,7 @@ def create_bucket(bucket_name, region='ap-shanghai'):
         ]
     }
     response = client.put_bucket_cors(
-        Bucket='bucket',
+        Bucket=bucket_name,
         CORSConfiguration=cors_config
     )
 
@@ -62,7 +62,7 @@ def cos_delete_file(bucket, file_list, region='ap-shanghai'):
         Bucket=bucket,
         Delete={
             'Object': delete,
-            'Quiet': 'true'|'false'
+            'Quiet': 'true'
         }
     )
 
@@ -98,3 +98,34 @@ def get_credential(bucket, region='ap-shanghai'):
         sts = Sts(config)
         response = sts.get_credential()
         return response
+
+
+def delete_bucket(bucket, region='ap-shanghai'):
+    config = CosConfig(Region=region, SecretId=secret_id, SecretKey=secret_key)
+    client = CosS3Client(config)
+    # 删除桶中所有的文件
+
+    while True:
+        obj_list = client.list_objects(Bucket=bucket)
+        print(obj_list.get("Contents"))
+        if not obj_list.get("Contents"):
+            break
+        # 'Contents': [{
+        # 'Key': '1658564360647-a5.jpeg', 
+        # 'LastModified': '2022-07-23T08:19:19.000Z', 
+        # 'ETag': '"b674a2f906abb67f2260efa81d2e8296"', 
+        # 'Size': '26009', 'Owner': {'ID': '1307733527', 
+        # 'DisplayName': '1307733527'}, 
+        # 'StorageClass': 'STANDARD'},]
+        contents = obj_list.get("Contents")
+        client.delete_objects(
+            Bucket=bucket,
+            Delete={
+                'Object': [{'Key': item['Key']} for item in contents],
+                'Quiet': 'true'
+            }
+        )
+    # 删除bucket
+    client.delete_bucket(
+        Bucket=bucket
+    )

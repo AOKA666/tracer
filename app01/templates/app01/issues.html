@@ -2,5 +2,41 @@
 
 
 {% block body %}
-<h1>issues</h1>
+<div class="container-fluid">
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-search" aria-hidden="true"></i> 筛选</h3>
+            </div>
+            <div class="panel-body">
+                Panel content
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading"><i class="fa fa-quora" aria-hidden="true"></i> 问题</div>
+            <div class="panel-body">
+                <a class="btn btn-success" href="#">新建问题</a>
+                <a class="btn btn-primary" href="#">邀请成员</a>
+            </div>
+          
+            <!-- Table -->
+            <table class="table">
+                <tr>
+                    <td style="width: 10%;">#111</td>
+                    <td>
+                        <div>Go for it</div>
+                        <div>
+                            <span>123</span>
+                            <span>456</span>
+                            <span>789</span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+          </div>
+    </div>
+</div>
 {% endblock %}

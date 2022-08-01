@@ -1,5 +1,7 @@
 from operator import mod
+from statistics import mode
 from django.db import models
+
 
 # Create your models here.
 
@@ -100,7 +102,7 @@ class FileRepository(models.Model):
     type = models.SmallIntegerField(choices=((1, "文件"), (2, "文件夹")))
     file_size = models.IntegerField(verbose_name="文件大小", null=True, blank=True)
     file_path = models.CharField(verbose_name="文件路径", max_length=256, null=True, blank=True)
-    key = models.CharField(verbose_name="COS中的key", max_length=128, blank=True, null=True)
+    key = models.CharField(verbose_name="COS中的key", max_length=256, blank=True, null=True)
     update_user = models.ForeignKey(verbose_name="更新者", to="UserInfo", on_delete=models.CASCADE)
     update_time = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)
     parent = models.ForeignKey(verbose_name="父文件夹", to="self", related_name="children", on_delete=models.CASCADE, blank=True, null=True)
@@ -108,3 +110,57 @@ class FileRepository(models.Model):
     def __str__(self):
         return '<FileRepository %s>' % self.name
 
+class Module(models.Model):
+    project = models.ForeignKey(verbose_name="项目", to='Project', on_delete=models.CASCADE)
+    title = models.CharField(verbose_name="模块名", max_length=32)
+
+    def __str__(self):
+        return self.title
+
+
+class IssueType(models.Model):
+    project = models.ForeignKey(verbose_name="项目", to='Project', on_delete=models.CASCADE)
+    title = models.CharField(verbose_name="问题类型", max_length=32)
+
+    def __str__(self):
+        return self.title
+
+
+class Issue(models.Model):
+    project = models.ForeignKey(verbose_name="项目",to="Project", on_delete=models.CASCADE)
+    issue_type = models.ForeignKey(verbose_name="问题类型", to="IssueType", on_delete=models.CASCADE)
+    module = models.ForeignKey(verbose_name="模块", to="Module", on_delete=models.CASCADE)
+    subject = models.CharField(verbose_name="主题", max_length=128)
+    desc = models.TextField(verbose_name="问题描述")
+    priority_choices = (
+        ('danger', '高'),
+        ('warning', '中'),
+        ('success', '低')
+    )
+    priority = models.CharField(verbose_name="优先级", max_length=16, choices=priority_choices, default='danger')
+    status_choices = (
+        (1, '新建'),
+        (2, '处理中'),
+        (3, '已解决'),
+        (4, '已忽略'),
+        (5, '待反馈'),
+        (6, '已关闭'),
+        (7, '重新打开'),
+    )
+    status = models.SmallIntegerField(verbose_name='状态', choices=status_choices, default=1)
+    assign = models.ForeignKey(verbose_name="指派", to='UserInfo', related_name='task', null=True, blank=True, on_delete=models.CASCADE)
+    attention = models.ForeignKey(verbose_name='关注者', to='UserInfo', related_name='observe', blank=True, null=True, on_delete=models.CASCADE)
+    start_date = models.DateTimeField(verbose_name='开始日期', blank=True, null=True)
+    end_date = models.DateTimeField(verbose_name='结束日期', blank=True, null=True)
+    mode_choices = (
+        (1, '公开模式'),
+        (2, '隐私模式')
+    )
+    mode = models.SmallIntegerField(verbose_name='模式', choices=mode_choices, default=1)
+    parent = models.ForeignKey(verbose_name='父问题', to='self', related_name='child', blank=True, null=True, on_delete=models.SET_NULL)
+    creator = models.ForeignKey(verbose_name='创建者', to='UserInfo', related_name='issues', on_delete=models.CASCADE)
+    create_time = models.DateTimeField(verbose_name='创建时间', auto_now_add=True)
+    last_update_time = models.DateTimeField(verbose_name='最后更新时间', auto_now_add=True)
+
+    def __str__(self):
+        return self.subject

@@ -1,4 +1,5 @@
 import json
+from urllib import response
 from django.shortcuts import render, HttpResponse
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -135,3 +136,13 @@ def cos_post(request, project_id):
     else:
         print(form.errors)
         return JsonResponse({"status": 0, "data": "文件上传错误"})
+
+
+def download(request, project_id, file_id):
+    """下载文件"""
+    file_obj = models.FileRepository.objects.filter(id=file_id, project_id=project_id).first()
+    import requests
+    data = requests.get(file_obj.file_path).content
+    response = HttpResponse(data)
+    response['Content-Disposition'] = "attachment; filename={}".format(file_obj.name)
+    return response

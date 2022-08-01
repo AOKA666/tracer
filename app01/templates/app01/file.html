@@ -93,13 +93,20 @@
                             <td>{{ file_obj.update_time|date:'Y年m月d日 H:i:s' }}</td>
                             <td>
                                 {% if file_obj.type == 2 %}
-                                <a class="btn btn-primary" href="#" data-toggle="modal" data-target="#addFile" data-fid="{{ file_obj.id }}" data-name="{{ file_obj.name }}">
+                                <a class="btn btn-default" href="#" data-toggle="modal" data-target="#addFile" data-fid="{{ file_obj.id }}" data-name="{{ file_obj.name }}">
                                     <i class="fa fa-pencil-square-o" aria-hidden="true"></i><span class="hidden">编辑文件夹</span>
                                 </a>
-                                {% endif %}
                                 <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#deleteFile" data-fid="{{ file_obj.id }}">
                                     <i class="fa fa-trash" aria-hidden="true"></i>
                                 </a>
+                                {% else %}
+                                <a class="btn btn-default" href="{% url 'app01:file_download' request.project.id file_obj.id %}" data-fid="{{ file_obj.id }}">
+                                    <i class="fa fa-cloud-download" aria-hidden="true"></i><span class="hidden">下载</span>
+                                </a>
+                                <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#deleteFile" data-fid="{{ file_obj.id }}">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                </a>
+                                {% endif %}
                         </tr>
                     {% endfor %}
                     </tbody>

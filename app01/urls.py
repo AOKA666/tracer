@@ -1,7 +1,7 @@
 from django.urls import path, re_path, include
 from app01.views.account import views
 from app01.views import project
-from app01.views import manage, wiki, file
+from app01.views import manage, wiki, file, setting, issue
 
 
 urlpatterns = [
@@ -31,13 +31,17 @@ urlpatterns = [
     # 进入项目
     re_path(r'^manage/(?P<project_id>\d+)/', include([
         re_path(r'^dashboard/$', manage.dashboard, name='dashboard'),
-        re_path(r'^issues/$', manage.issues, name='issues'),
+        
         re_path(r'^statistics/$', manage.statistics, name='statistics'),
 
         re_path(r'^file/$', file.file, name='file'),
         re_path(r'^file/delete/$', file.delete, name='delete_file'),
+        # 获取临时秘钥
         re_path(r'^file/cos/credential/$', file.cos_credential, name='cos_credential'),
+        # 上传文件
         re_path(r'^file/cos/post/$', file.cos_post, name='cos_post'),
+        # 下载文件
+        re_path(r'^file/download/(?P<file_id>\d+)/$', file.download, name='file_download'),
         
         re_path(r'^wiki/$', wiki.wiki, name='wiki'),
         re_path(r'^wiki/add/$', wiki.wiki_add, name='wiki_add'),
@@ -45,6 +49,10 @@ urlpatterns = [
         re_path(r'^wiki/delete/(?P<wiki_id>\d+)/$', wiki.wiki_delete, name='wiki_delete'),
         re_path(r'^wiki/list/$', wiki.wiki_list, name='wiki_list'),
         re_path(r'^wiki/upload/$', wiki.upload, name='wiki_upload'),
-        re_path(r'^settings/$', manage.settings, name='settings'),
+
+        re_path(r'^settings/$', setting.settings, name='settings'),
+        re_path(r'^settings/delete/$', setting.project_delete, name='project_delete'),
+
+        re_path(r'^issues/$', issue.issues, name='issues'),
     ]))
 ]

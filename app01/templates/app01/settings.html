@@ -2,5 +2,24 @@
 
 
 {% block body %}
-<h1>settings</h1>
+<div class="container-fluid">
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">个人中心</div>         
+            <div class="list-group">
+                <a href="{% url 'app01:settings' request.project.id %}" class="list-group-item active">我的资料</a>
+                <a href="#" class="list-group-item">修改密码</a>
+                <a href="{% url 'app01:project_delete' request.project.id %}" class="list-group-item">删除项目</a>
+              </div>
+          </div>
+    </div>
+    <div class="col-md-9">
+        <div class="panel panel-default">
+            <div class="panel-heading">我的资料</div>
+            <div class="panel-body">
+                <div class="text-center"><b>系统设置</b></div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
