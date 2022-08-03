@@ -119,6 +119,7 @@ class Module(models.Model):
 
 
 class IssueType(models.Model):
+    default_type = ['任务','功能','Bug']
     project = models.ForeignKey(verbose_name="项目", to='Project', on_delete=models.CASCADE)
     title = models.CharField(verbose_name="问题类型", max_length=32)
 
@@ -129,7 +130,7 @@ class IssueType(models.Model):
 class Issue(models.Model):
     project = models.ForeignKey(verbose_name="项目",to="Project", on_delete=models.CASCADE)
     issue_type = models.ForeignKey(verbose_name="问题类型", to="IssueType", on_delete=models.CASCADE)
-    module = models.ForeignKey(verbose_name="模块", to="Module", on_delete=models.CASCADE)
+    module = models.ForeignKey(verbose_name="模块", to="Module", blank=True, null=True, on_delete=models.CASCADE)
     subject = models.CharField(verbose_name="主题", max_length=128)
     desc = models.TextField(verbose_name="问题描述")
     priority_choices = (
@@ -149,7 +150,7 @@ class Issue(models.Model):
     )
     status = models.SmallIntegerField(verbose_name='状态', choices=status_choices, default=1)
     assign = models.ForeignKey(verbose_name="指派", to='UserInfo', related_name='task', null=True, blank=True, on_delete=models.CASCADE)
-    attention = models.ForeignKey(verbose_name='关注者', to='UserInfo', related_name='observe', blank=True, null=True, on_delete=models.CASCADE)
+    attention = models.ManyToManyField(verbose_name='关注者', to='UserInfo')
     start_date = models.DateTimeField(verbose_name='开始日期', blank=True, null=True)
     end_date = models.DateTimeField(verbose_name='结束日期', blank=True, null=True)
     mode_choices = (

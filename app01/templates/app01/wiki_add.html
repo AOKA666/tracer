@@ -37,7 +37,8 @@
                 imageUpload: true,
                 imageFormats   : ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
                 imageUploadURL : "{% url 'app01:wiki_upload' request.project.id %}",
-            })
+            });
+            $(".editormd-preview-close-btn").css("display", 'none');
         }
     </script>
 {% endblock %}

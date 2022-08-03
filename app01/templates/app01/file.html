@@ -213,7 +213,7 @@
             bindUploadEvent();
         })
         function initModal(){
-            $('#addFile').on('show.bs.modal', function (e) {
+            $('#addFile').on('shown.bs.modal', function (e) {
                 let btn = $(e.relatedTarget);
                 let fid = btn.data("fid");
                 let name = btn.data("name");
@@ -253,7 +253,7 @@
         }
 
         function initDeleteModal() {
-            $('#deleteFile').on('show.bs.modal', function (e){
+            $('#deleteFile').on('shown.bs.modal', function (e){
                 let btn = $(e.relatedTarget);
                 let fid = btn.data("fid");
                 let modal = $(this);

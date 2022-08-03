@@ -28,11 +28,17 @@ def project_list(request):
         return render(request, 'app01/project_list.html', {'form': form, 'project_display': project_display})
     form = ProjectForm(request, request.POST)
     if form.is_valid():
+        # 创建桶
         bucket = "{}-{}-1307733527".format(request.POST.get("name"), str(int(time.time())))
         create_bucket(bucket_name=bucket)
         form.instance.creator = request.tracer
         form.instance.bucket = bucket
-        form.save()
+        instance = form.save()
+        # 初始化问题类型
+        issue_type_list = []
+        for item in models.IssueType.default_type:
+            issue_type_list.append(models.IssueType(title=item, project=instance))
+        models.IssueType.objects.bulk_create(issue_type_list)
         return JsonResponse({"status": 1})
     return JsonResponse({"status": 0, "msg": form.errors})
 
