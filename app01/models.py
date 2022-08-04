@@ -73,6 +73,9 @@ class Project(models.Model):
 
     bucket = models.CharField(verbose_name='cos桶', max_length=128)
 
+    def __str__(self):
+        return self.name
+
 
 class ProjectUser(models.Model):
     """参加的项目"""
@@ -109,6 +112,7 @@ class FileRepository(models.Model):
 
     def __str__(self):
         return '<FileRepository %s>' % self.name
+
 
 class Module(models.Model):
     project = models.ForeignKey(verbose_name="项目", to='Project', on_delete=models.CASCADE)
@@ -150,9 +154,9 @@ class Issue(models.Model):
     )
     status = models.SmallIntegerField(verbose_name='状态', choices=status_choices, default=1)
     assign = models.ForeignKey(verbose_name="指派", to='UserInfo', related_name='task', null=True, blank=True, on_delete=models.CASCADE)
-    attention = models.ManyToManyField(verbose_name='关注者', to='UserInfo')
-    start_date = models.DateTimeField(verbose_name='开始日期', blank=True, null=True)
-    end_date = models.DateTimeField(verbose_name='结束日期', blank=True, null=True)
+    attention = models.ManyToManyField(verbose_name='关注者', to='UserInfo', blank=True)
+    start_date = models.DateField(verbose_name='开始日期', blank=True, null=True)
+    end_date = models.DateField(verbose_name='结束日期', blank=True, null=True)
     mode_choices = (
         (1, '公开模式'),
         (2, '隐私模式')
@@ -165,3 +169,16 @@ class Issue(models.Model):
 
     def __str__(self):
         return self.subject
+
+
+class IssueReply(models.Model):
+    issue = models.ForeignKey(verbose_name="问题", to='Issue', on_delete=models.CASCADE)
+    creator = models.ForeignKey(verbose_name="记录者", to='UserInfo', on_delete=models.CASCADE)
+    content = models.TextField(verbose_name="记录内容")
+    type_choices = (
+        (1, '修改记录'),
+        (2, '回复')
+    )
+    type = models.SmallIntegerField(verbose_name="记录类型", choices=type_choices)
+    time = models.DateTimeField(verbose_name="记录时间", auto_now_add=True)
+    parent = models.ForeignKey(verbose_name="父记录", to="self", blank=True, null=True, on_delete=models.CASCADE)
