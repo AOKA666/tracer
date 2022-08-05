@@ -1,6 +1,7 @@
 from django .shortcuts import render
-from app01.forms.issues import IssueForm
+from app01.forms.issues import IssueForm, IssueRecordForm
 from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 from app01 import models
 
@@ -18,9 +19,6 @@ def issues(request, project_id):
         else:
             current_page = int(current_page)
         query_set = paginator.page(current_page)
-        print(query_set)
-        for i in query_set:
-            print(i)
         form = IssueForm(request)
         return render(request, 'app01/issues.html', locals())
     form = IssueForm(request, data=request.POST)
@@ -38,7 +36,23 @@ def issues(request, project_id):
 def details(request, project_id, issue_id):
     issue_obj = models.Issue.objects.filter(id=issue_id, project_id=project_id).first()
     form = IssueForm(request, instance=issue_obj)
-    reply_list = models.IssueReply.objects.filter(project_id=project_id, issue_id=issue_id).values_list(
-        "id", "title", "content", "parent_id")
-    print(reply_list)
-    return render(request, 'app01/issue_details.html', {"form": form, "reply_list": reply_list})
+    return render(request, 'app01/issue_details.html', {"form": form, "issue_obj": issue_obj})
+
+
+@csrf_exempt
+def record(request, project_id, issue_id):
+    if request.method == 'GET':
+        reply_list = models.IssueReply.objects.filter(issue_id=issue_id).values(
+            "id", "content", "parent_id", "creator__username", "time", "type")
+        result = list(reply_list)
+        result[0]['time'] = result[0]['time'].strftime("%Y-%m-%d %H:%M:%S")
+        print(reply_list)
+        return JsonResponse({"data":result})
+    form = IssueRecordForm(request.POST) 
+    if form.is_valid():
+        form.instance.issue_id = issue_id
+        form.instance.creator = request.tracer
+        form.save()
+        return JsonResponse({"status": True})
+    else:
+        return JsonResponse({"status": False, "errors": form.errors})

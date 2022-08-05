@@ -174,7 +174,7 @@ class Issue(models.Model):
 class IssueReply(models.Model):
     issue = models.ForeignKey(verbose_name="问题", to='Issue', on_delete=models.CASCADE)
     creator = models.ForeignKey(verbose_name="记录者", to='UserInfo', on_delete=models.CASCADE)
-    content = models.TextField(verbose_name="记录内容")
+    content = models.CharField(verbose_name="记录内容", max_length=32)
     type_choices = (
         (1, '修改记录'),
         (2, '回复')

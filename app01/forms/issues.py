@@ -24,3 +24,9 @@ class IssueForm(BootstrapForm, forms.ModelForm):
         data_list = models.Issue.objects.filter(project=request.project).values_list("id", "subject")
         parent_choice.extend(data_list)
         self.fields['parent'].choices = parent_choice
+
+
+class IssueRecordForm(forms.ModelForm):
+    class Meta:
+        model = models.IssueReply
+        fields = ['content', 'type', 'parent']
