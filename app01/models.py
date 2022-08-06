@@ -182,3 +182,4 @@ class IssueReply(models.Model):
     type = models.SmallIntegerField(verbose_name="记录类型", choices=type_choices)
     time = models.DateTimeField(verbose_name="记录时间", auto_now_add=True)
     parent = models.ForeignKey(verbose_name="父记录", to="self", blank=True, null=True, on_delete=models.CASCADE)
+    depth = models.SmallIntegerField(verbose_name="深度", default=1)

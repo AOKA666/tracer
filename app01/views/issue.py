@@ -42,17 +42,33 @@ def details(request, project_id, issue_id):
 @csrf_exempt
 def record(request, project_id, issue_id):
     if request.method == 'GET':
-        reply_list = models.IssueReply.objects.filter(issue_id=issue_id).values(
+        reply_list = models.IssueReply.objects.filter(issue_id=issue_id).order_by("depth", "-time").values(
             "id", "content", "parent_id", "creator__username", "time", "type")
         result = list(reply_list)
-        result[0]['time'] = result[0]['time'].strftime("%Y-%m-%d %H:%M:%S")
-        print(reply_list)
-        return JsonResponse({"data":result})
-    form = IssueRecordForm(request.POST) 
+        # 更改时间格式
+        for each in result:
+            each['time'] = each['time'].strftime("%Y-%m-%d %H:%M:%S")
+        print(result)
+        return JsonResponse({"data": result})
+    form = IssueRecordForm(request.POST)
     if form.is_valid():
         form.instance.issue_id = issue_id
         form.instance.creator = request.tracer
-        form.save()
-        return JsonResponse({"status": True})
+        parent_id = request.POST.get("parent")
+        if parent_id:
+            print(models.IssueReply.objects.get(id=parent_id).depth)
+            form.instance.depth = models.IssueReply.objects.get(id=parent_id).depth + 1
+        else:
+            form.instance.depth = 1
+        instance = form.save()
+        result_dict = [{
+            "id": instance.id,
+            "content": instance.content,
+            "parent_id": instance.parent_id,
+            "creator__username": instance.creator.username,
+            "time": instance.time.strftime("%Y-%m-%d %H:%M:%S"),
+            "type": instance.type
+        }]
+        return JsonResponse({"status": True, "data": result_dict})
     else:
         return JsonResponse({"status": False, "errors": form.errors})
