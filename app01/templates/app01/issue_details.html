@@ -7,7 +7,7 @@
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
     <style>
-        .avatar {
+        .issue-record .avatar {
             width: 40px;
             height: 40px;
             background-color: #1A1A17;
@@ -18,20 +18,22 @@
             font-size: 16px;
             float: left;
         }
-
-        .text {
+        .issue-record .text{
             float: left;
             margin-left: 20px;
-            width: 85%;
         }
-        .content {font-size: 16px;}
-        .foot {color: #999;}
-        .foot span {margin-right: 20px;}
-        .btns {margin-top: 10px;}
-        .record{margin-bottom: 20px;}
-        .children{
+        .issue-record .content {font-size: 16px;}
+        .issue-record .foot {color: #999;}
+        .issue-record .foot span {margin-right: 20px;}
+        .issue-record .btns {margin-top: 10px;}
+        .issue-record .record{
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .issue-record .children{
             margin-left: 50px;
             padding-top: 20px;
+            clear: both;
         }
     </style>
 {% endblock %}
@@ -167,7 +169,7 @@
                             <span class="reply-btn"><a class="reply-link" href="#replier"><i class="fa fa-commenting" aria-hidden="true"></i> 回复</a></span>
                         </div>
                     </div>
-                    <div class="children" style="clear:left"></div>
+                    <div class="children"></div>
                 </div>
             </div>
         </div>
@@ -187,7 +189,7 @@
             initReplyList();
             close_button();
             bindSubmitEvent();
-            replySomebody();
+            //replySomebody();
         })
 
         function initEditor() {
@@ -198,6 +200,10 @@
                 imageUpload: true,
                 imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
                 imageUploadURL: "{% url 'app01:wiki_upload' request.project.id %}",
+                toolbarIcons: function(){
+                    return ["bold", "hr", "italic", "del", "quote", "|", "image", "preview", "watch", "fullscreen", "||", "save"]
+                },
+
                 onload: function () {
                     this.previewing();
                 }
@@ -248,6 +254,7 @@
                     $("#id_" + value.parent_id).find(".children").append(record);
                 }
             })
+            replySomebody();
         }
 
         function close_button() {
@@ -287,14 +294,24 @@
             })
         }
 
-        function replySomebody() {
+        function replySomebody2() {
             $(".record-display").on("click", ".reply-link", function () {
-                $("#omg").focus();
+                $(".record-content").focus();
                 let parent_id = $(this).parent().parent().parent().parent().attr("id").slice(3);
                 let creator = $($(this).parent().prevAll()[1]).text();
                 $(".issue-record .close_btn").attr("id", parent_id).next().text("@" + creator);
                 $("#replier").removeClass("hidden");
             })
+        }
+
+        function replySomebody() {
+            $(".reply-link").click(function(){
+                $(".record-content").focus();
+                let parent_id = $(this).parent().parent().parent().parent().attr("id").slice(3);
+                let creator = $($(this).parent().prevAll()[1]).text();
+                $(".issue-record .close_btn").attr("id", parent_id).next().text("@" + creator);
+                $("#replier").removeClass("hidden");
+            })           
         }
 
     </script>

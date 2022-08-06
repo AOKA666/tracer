@@ -9,6 +9,7 @@ class IssueForm(BootstrapForm, forms.ModelForm):
         exclude = ['project', 'creator', 'create_time', 'last_update_time']
         widgets ={
             "module": forms.Select(attrs={"class": "selectpicker"}),
+            "status": forms.Select(attrs={"class": "selectpicker"}),
             "issue_type": forms.Select(attrs={"class": "selectpicker"}),
             "parent": forms.Select(attrs={"class": "selectpicker"}),
             "mode": forms.Select(attrs={"class": "selectpicker"}),
