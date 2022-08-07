@@ -30,3 +30,13 @@ def menu_list(request):
         if request.path_info.startswith(item["url"]):
             item["class"] = "active"
     return {"data_list": data_list}
+
+
+@register.simple_tag
+def render_issue_id(issue_id):
+    return str(issue_id).zfill(3)
+
+
+@register.simple_tag
+def render_prefix_dot(issue):
+    return 'dot-'+issue.priority

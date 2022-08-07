@@ -1,5 +1,6 @@
 {% extends 'app01/layout/manage.html' %}
 {% load static %}
+{% load tags %}
 
 
 {% block mycss %}
@@ -24,12 +25,26 @@
         font-size: 16px;
         margin-left: 10px;
     }
-    .dot{
+    span.dot-warning{
+        background-color: #f0ad4e;
         display: inline-block;
         width: 10px;
         height: 10px;
         border-radius: 5px;
-        background-color: #A6E22E;
+    }
+    span.dot-danger{
+        background-color: #d9534f;
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 5px;
+    }
+    span.dot-success{
+        background-color: #5cb85c;
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 5px;
     }
     .error{
         color: red;
@@ -62,10 +77,10 @@
             <table class="table">
                 {% for issue in query_set %}
                 <tr>
-                    <td style="width: 10%;">
-                        <span class="dot"></span>
+                    <td style="width: 10%;text-align: center;">
+                        <span class="{% render_prefix_dot issue %}"></span>
                         <span class="issue-id">
-                            <a href="{% url 'app01:issue_details' request.project.id issue.id %}">#{{ issue.id }}</a>
+                            <a href="{% url 'app01:issue_details' request.project.id issue.id %}"># {% render_issue_id issue.id %}</a>
                         </span>
                     </td>
                     <td>

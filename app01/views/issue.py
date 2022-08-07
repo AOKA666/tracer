@@ -8,7 +8,7 @@ from app01 import models
 
 def issues(request, project_id):
     if request.method == 'GET':
-        issue_list = models.Issue.objects.all()
+        issue_list = models.Issue.objects.all().order_by("-id")
         # 分页
         paginator = Paginator(issue_list, per_page=2)
         current_page = request.GET.get("page", "1")
@@ -48,7 +48,6 @@ def record(request, project_id, issue_id):
         # 更改时间格式
         for each in result:
             each['time'] = each['time'].strftime("%Y-%m-%d %H:%M:%S")
-        print(result)
         return JsonResponse({"data": result})
     form = IssueRecordForm(request.POST)
     if form.is_valid():
@@ -56,7 +55,6 @@ def record(request, project_id, issue_id):
         form.instance.creator = request.tracer
         parent_id = request.POST.get("parent")
         if parent_id:
-            print(models.IssueReply.objects.get(id=parent_id).depth)
             form.instance.depth = models.IssueReply.objects.get(id=parent_id).depth + 1
         else:
             form.instance.depth = 1

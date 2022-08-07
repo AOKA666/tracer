@@ -21,6 +21,7 @@
         .issue-record .text{
             float: left;
             margin-left: 20px;
+            width: 90%;
         }
         .issue-record .content {font-size: 16px;}
         .issue-record .foot {color: #999;}
@@ -28,12 +29,37 @@
         .issue-record .btns {margin-top: 10px;}
         .issue-record .record{
             margin-bottom: 20px;
-            position: relative;
         }
         .issue-record .children{
             margin-left: 50px;
             padding-top: 20px;
             clear: both;
+        }
+        .issue-record{
+            min-height: 500px;
+            height: 700px;
+            overflow: auto;
+        }
+        span.dot-warning{
+            background-color: #f0ad4e;
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 5px;
+        }
+        span.dot-danger{
+            background-color: #d9534f;
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 5px;
+        }
+        span.dot-success{
+            background-color: #5cb85c;
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 5px;
         }
     </style>
 {% endblock %}
@@ -42,7 +68,7 @@
     <div class="container-fluid">
         <div class="col-md-7">
         <div class="panel panel-default">
-            <div class="panel-heading">编辑数据</div>
+            <div class="panel-heading"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> 编辑数据</div>
             <div class="panel-body">
                 <form class="form-horizontal">
                     {% csrf_token %}
@@ -137,11 +163,11 @@
     </div>
         <div class="col-md-5">
         <div class="panel panel-default">
-            <div class="panel-heading">操作记录</div>
+            <div class="panel-heading"><i class="fa fa-id-card" aria-hidden="true"></i> 操作记录</div>
             <div class="panel-body issue-record">
-                <div class="record-display"></div>
+
                 <div class="submit">
-                    <textarea class="form-control record-content" rows="3"></textarea>
+                    <textarea class="form-control record-content" id="comment" rows="3"></textarea>
                     <div class="btns">
                         <button class="btn btn-success" id="record_submit">提交</button>
                         <div class="btn btn-default hidden" id="replier">
@@ -151,6 +177,8 @@
                         </div>
                     </div>
                 </div>
+                <hr>
+                <div class="record-display"></div>
             </div>
         </div>
     </div>
@@ -166,7 +194,7 @@
                             <span class="report-type"><i class="fa fa-bullhorn" aria-hidden="true"></i></span>
                             <span class="creator"><i class="fa fa-user" aria-hidden="true"></i></span>
                             <span class="create-time"><i class="fa fa-clock-o" aria-hidden="true"></i></span>
-                            <span class="reply-btn"><a class="reply-link" href="#replier"><i class="fa fa-commenting" aria-hidden="true"></i> 回复</a></span>
+                            <span class="reply-btn"><a class="reply-link" href="#comment"><i class="fa fa-commenting" aria-hidden="true"></i> 回复</a></span>
                         </div>
                     </div>
                     <div class="children"></div>
@@ -189,7 +217,7 @@
             initReplyList();
             close_button();
             bindSubmitEvent();
-            //replySomebody();
+            replySomebody();
         })
 
         function initEditor() {
@@ -254,7 +282,6 @@
                     $("#id_" + value.parent_id).find(".children").append(record);
                 }
             })
-            replySomebody();
         }
 
         function close_button() {
@@ -294,24 +321,13 @@
             })
         }
 
-        function replySomebody2() {
+        function replySomebody() {
             $(".record-display").on("click", ".reply-link", function () {
-                $(".record-content").focus();
                 let parent_id = $(this).parent().parent().parent().parent().attr("id").slice(3);
                 let creator = $($(this).parent().prevAll()[1]).text();
                 $(".issue-record .close_btn").attr("id", parent_id).next().text("@" + creator);
                 $("#replier").removeClass("hidden");
             })
-        }
-
-        function replySomebody() {
-            $(".reply-link").click(function(){
-                $(".record-content").focus();
-                let parent_id = $(this).parent().parent().parent().parent().attr("id").slice(3);
-                let creator = $($(this).parent().prevAll()[1]).text();
-                $(".issue-record .close_btn").attr("id", parent_id).next().text("@" + creator);
-                $("#replier").removeClass("hidden");
-            })           
         }
 
     </script>

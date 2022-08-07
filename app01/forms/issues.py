@@ -3,6 +3,11 @@ from app01 import models
 from .bootstrap import BootstrapForm
 
 
+class CustomerSelect(forms.Select):
+    template_name = 'app01/widgets/select.html'
+    option_template_name = 'app01/widgets/select_option.html'
+
+
 class IssueForm(BootstrapForm, forms.ModelForm):
     class Meta:
         model = models.Issue
@@ -13,7 +18,7 @@ class IssueForm(BootstrapForm, forms.ModelForm):
             "issue_type": forms.Select(attrs={"class": "selectpicker"}),
             "parent": forms.Select(attrs={"class": "selectpicker"}),
             "mode": forms.Select(attrs={"class": "selectpicker"}),
-            "priority": forms.Select(attrs={"class": "selectpicker"}),
+            "priority": CustomerSelect(attrs={"class": "selectpicker"}),
             "assign": forms.Select(attrs={"class": "selectpicker"}),
             "attention": forms.SelectMultiple(attrs={"class": "selectpicker", "data-live-search":"true"}),
         }
@@ -25,6 +30,8 @@ class IssueForm(BootstrapForm, forms.ModelForm):
         data_list = models.Issue.objects.filter(project=request.project).values_list("id", "subject")
         parent_choice.extend(data_list)
         self.fields['parent'].choices = parent_choice
+
+        print(self.fields['priority'].choices)
 
 
 class IssueRecordForm(forms.ModelForm):
