@@ -1,3 +1,5 @@
+import json
+
 from django .shortcuts import render
 from app01.forms.issues import IssueForm, IssueRecordForm
 from django.http import JsonResponse, HttpResponse
@@ -70,3 +72,29 @@ def record(request, project_id, issue_id):
         return JsonResponse({"status": True, "data": result_dict})
     else:
         return JsonResponse({"status": False, "errors": form.errors})
+
+
+@csrf_exempt
+def data_change(request, project_id, issue_id):
+    data_dict = json.loads(request.body.decode("utf-8"))
+    print(data_dict)
+    issue_obj = models.Issue.objects.filter(id=issue_id, project_id=project_id).first()
+    """
+    判断数据来源
+        1. 输入框：subject, content, start_time, end_time
+        2. 下拉框：type, module, mode, status, priority
+        3. 外键：parent, assign
+        4. 多对多：attention
+    """
+    name = data_dict.get("name")
+    value = data_dict.get("value")
+    field = models.Issue._meta.get_field(name)
+    if name in ["subject", "content", "start_time", "end_time"]:
+        if not value:
+            # 是否允许为空
+            if not field.null:
+                return JsonResponse({"status": False, "msg": "该字段不能为空"})
+            else:
+                setattr(issue_obj, name, value)
+                issue_obj.save()
+    return JsonResponse({})

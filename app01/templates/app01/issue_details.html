@@ -61,6 +61,9 @@
             height: 10px;
             border-radius: 5px;
         }
+    #edit_form .error{
+        color: red;
+    }
     </style>
 {% endblock %}
 
@@ -70,12 +73,13 @@
         <div class="panel panel-default">
             <div class="panel-heading"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> 编辑数据</div>
             <div class="panel-body">
-                <form class="form-horizontal">
+                <form class="form-horizontal" id="edit_form">
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="id_for_subject" class="col-sm-2 control-label">{{ form.subject.label }}</label>
                         <div class="col-sm-10">
-                            {{ form.subject }}
+                            <div>{{ form.subject }}</div>
+                            <span class="error"></span>
                         </div>
                     </div>
                     <div class="form-group">
@@ -83,18 +87,21 @@
                                class="col-sm-2 control-label">{{ form.issue_type.label }}</label>
                         <div class="col-sm-10">
                             {{ form.issue_type }}
+                            <span class="error"></span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="id_for_module" class="col-sm-2 control-label">{{ form.module.label }}</label>
                         <div class="col-sm-10">
                             {{ form.module }}
+                            <span class="error"></span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="id_for_desc" class="col-sm-2 control-label">{{ form.desc.label }}</label>
                         <div class="col-sm-10">
-                            <div id="editor">{{ form.desc }}</div>
+                            <div id="editor"></div>
+                            <span class="error">{{ form.errors.0 }}</span>
                         </div>
                     </div>
                     <div class="form-group">
@@ -102,14 +109,22 @@
                             <label for="id_for_start_date"
                                    class="col-sm-4 control-label">{{ form.start_date.label }}</label>
                             <div class="col-sm-8">
-                                {{ form.start_date }}
+                                <div class="input-group">
+                                  <span class="input-group-addon" id="basic-addon1"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                                  {{ form.start_date }}
+                                    <span class="error"></span>
+                                </div>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <label for="id_for_end_date"
                                    class="col-sm-4 control-label">{{ form.end_date.label }}</label>
                             <div class="col-sm-8">
-                                {{ form.end_date }}
+                                <div class="input-group">
+                                  <span class="input-group-addon" id="basic-addon1"><i class="fa fa-calendar" aria-hidden="true"></i></span>
+                                  {{ form.end_date }}
+                                    <span class="error"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -118,12 +133,14 @@
                             <label for="id_for_parent" class="col-sm-4 control-label">{{ form.parent.label }}</label>
                             <div class="col-sm-8">
                                 {{ form.parent }}
+                                <span class="error"></span>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <label for="id_for_attention" class="col-sm-4 control-label">{{ form.mode.label }}</label>
                             <div class="col-sm-8">
                                 {{ form.mode }}
+                                <span class="error"></span>
                             </div>
                         </div>
                     </div>
@@ -133,12 +150,14 @@
                                    class="col-sm-4 control-label">{{ form.priority.label }}</label>
                             <div class="col-sm-8">
                                 {{ form.priority }}
+                                <span class="error"></span>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <label for="id_for_status" class="col-sm-4 control-label">{{ form.status.label }}</label>
                             <div class="col-sm-8">
                                 {{ form.status }}
+                                <span class="error"></span>
                             </div>
                         </div>
                     </div>
@@ -147,6 +166,7 @@
                             <label for="id_for_assign" class="col-sm-4 control-label">{{ form.assign.label }}</label>
                             <div class="col-sm-8">
                                 {{ form.assign }}
+                                <span class="error"></span>
                             </div>
                         </div>
                         <div class="col-sm-6">
@@ -154,6 +174,7 @@
                                    class="col-sm-4 control-label">{{ form.attention.label }}</label>
                             <div class="col-sm-8">
                                 {{ form.attention }}
+                                <span class="error"></span>
                             </div>
                         </div>
                     </div>
@@ -211,17 +232,27 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/i18n/defaults-zh_CN.min.js"></script>
     <script>
         let Issue_Record_URL = "{% url 'app01:issue_record' request.project.id issue_obj.id %}";
+        let Issue_Data_Change_URL = "{% url 'app01:issue_data_change' request.project.id issue_obj.id %}"
+        let editor;
         $(function () {
+            // 初始化编辑器
             initEditor();
+            // 初始化datepicker插件
             initDatePicker();
+            // ajax渲染记录列表
             initReplyList();
+            // 回复时关闭按钮
             close_button();
+            // 提交记录
             bindSubmitEvent();
+            // 回复
             replySomebody();
+            // 监听编辑页面变化
+            inputChange();
         })
 
         function initEditor() {
-            editormd('editor', {
+            editor = editormd('editor', {
                 placeholder: "请输入内容",
                 height: 300,
                 path: "{% static 'plugin/editor.md/lib/' %}",
@@ -231,7 +262,9 @@
                 toolbarIcons: function(){
                     return ["bold", "hr", "italic", "del", "quote", "|", "image", "preview", "watch", "fullscreen", "||", "save"]
                 },
-
+                toolbarCustomIcons : {
+                    save : '<a class="btn btn-success" style="color:white;" id="save" onclick="saveButton()">保存</a>'
+                },
                 onload: function () {
                     this.previewing();
                 }
@@ -328,6 +361,36 @@
                 $(".issue-record .close_btn").attr("id", parent_id).next().text("@" + creator);
                 $("#replier").removeClass("hidden");
             })
+        }
+
+        function inputChange(){
+            $("#edit_form .form-control").change(function(){
+                let data_dict = {"name": $(this).attr("name"), "value": $(this).val()};
+                bindFormChangeEvent(data_dict)
+            })
+        }
+
+        function saveButton(){
+            $(".editormd-menu #save").click(function(){
+                let data_dict = {"name": "content", "value": editor.getValue()};
+                bindFormChangeEvent(data_dict);
+            })
+        }
+
+        function bindFormChangeEvent(data_dict) {
+            $("#id_"+data_dict.name).parent().next().html("");
+            $.ajax({
+                url: Issue_Data_Change_URL,
+                data: JSON.stringify(data_dict),
+                type: 'post',
+                success: function (ret) {
+                    console.log(ret);
+                    if(!ret.status){
+                        $("#id_"+data_dict.name).parent().next().html(ret.msg);
+                    }
+                }
+            })
+
         }
 
     </script>

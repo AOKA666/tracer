@@ -31,8 +31,6 @@ class IssueForm(BootstrapForm, forms.ModelForm):
         parent_choice.extend(data_list)
         self.fields['parent'].choices = parent_choice
 
-        print(self.fields['priority'].choices)
-
 
 class IssueRecordForm(forms.ModelForm):
     class Meta:
