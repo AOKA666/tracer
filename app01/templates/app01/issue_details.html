@@ -21,7 +21,7 @@
         .issue-record .text{
             float: left;
             margin-left: 20px;
-            width: 90%;
+            width: 85%;
         }
         .issue-record .content {font-size: 16px;}
         .issue-record .foot {color: #999;}
@@ -299,7 +299,7 @@
             $.each(ret.data, function (index, value) {
                 let record = $("#reply-tmp").find(".record").clone();
                 record.attr("id", "id_" + value.id)
-                record.find(".avatar").text('W');
+                record.find(".avatar").text(value.creator__username[0].toUpperCase());
                 record.find(".content .well").text(value.content);
                 if (value.type === 1) {
                     record.find(".report-type i").after(" 修改记录");
@@ -310,9 +310,9 @@
                 record.find(".create-time i").after(" " + value.time);
                 // 根记录
                 if (!value.parent_id) {
-                    $(".record-display").append(record).append($("<hr>"));
+                    $(".record-display").prepend(record.append($("<hr>")));
                 } else {
-                    $("#id_" + value.parent_id).find(".children").append(record);
+                    $("#id_" + value.parent_id).find(".children").prepend(record);
                 }
             })
         }
@@ -387,6 +387,8 @@
                     console.log(ret);
                     if(!ret.status){
                         $("#id_"+data_dict.name).parent().next().html(ret.msg);
+                    }else{
+                        display(ret);
                     }
                 }
             })

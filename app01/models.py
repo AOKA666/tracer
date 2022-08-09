@@ -132,6 +132,7 @@ class IssueType(models.Model):
 
 
 class Issue(models.Model):
+    """问题"""
     project = models.ForeignKey(verbose_name="项目",to="Project", on_delete=models.CASCADE)
     issue_type = models.ForeignKey(verbose_name="问题类型", to="IssueType", on_delete=models.CASCADE)
     module = models.ForeignKey(verbose_name="模块", to="Module", blank=True, null=True, on_delete=models.CASCADE)
@@ -165,13 +166,14 @@ class Issue(models.Model):
     parent = models.ForeignKey(verbose_name='父问题', to='self', related_name='child', blank=True, null=True, on_delete=models.SET_NULL)
     creator = models.ForeignKey(verbose_name='创建者', to='UserInfo', related_name='issues', on_delete=models.CASCADE)
     create_time = models.DateTimeField(verbose_name='创建时间', auto_now_add=True)
-    last_update_time = models.DateTimeField(verbose_name='最后更新时间', auto_now_add=True)
+    last_update_time = models.DateTimeField(verbose_name='最后更新时间', auto_now=True)
 
     def __str__(self):
         return self.subject
 
 
 class IssueReply(models.Model):
+    """问题记录"""
     issue = models.ForeignKey(verbose_name="问题", to='Issue', on_delete=models.CASCADE)
     creator = models.ForeignKey(verbose_name="记录者", to='UserInfo', on_delete=models.CASCADE)
     content = models.CharField(verbose_name="记录内容", max_length=32)

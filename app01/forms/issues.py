@@ -30,6 +30,17 @@ class IssueForm(BootstrapForm, forms.ModelForm):
         data_list = models.Issue.objects.filter(project=request.project).values_list("id", "subject")
         parent_choice.extend(data_list)
         self.fields['parent'].choices = parent_choice
+        # 指派只能是项目创建者或参与者
+        assign_list = [("", "没有选中任何项"),(request.project.creator.id, request.project.creator.username)]
+        join_list = models.ProjectUser.objects.filter(project=request.project).values_list("user_id", "user__username")
+        assign_list.extend(join_list)
+        self.fields['assign'].choices = assign_list
+        # 关注也是项目创建者或参与者
+        attention_list = [(request.project.creator.id, request.project.creator.username)]
+        join_list = models.ProjectUser.objects.filter(project=request.project).values_list("user_id", "user__username")
+        attention_list.extend(join_list)
+        self.fields['attention'].choices = attention_list
+
 
 
 class IssueRecordForm(forms.ModelForm):
