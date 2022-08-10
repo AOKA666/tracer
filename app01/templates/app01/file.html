@@ -107,6 +107,7 @@
                                     <i class="fa fa-trash" aria-hidden="true"></i>
                                 </a>
                                 {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -189,6 +190,9 @@
                 <td class="update_user">最近更新者</td>
                 <td class="update_time">最近更新时间</td>
                 <td class="delete">
+                    <a class="btn btn-default" href="#" data-fid="{{ file_obj.id }}">
+                        <i class="fa fa-cloud-download" aria-hidden="true"></i><span class="hidden">下载</span>
+                    </a>
                     <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#deleteFile">
                         <i class="fa fa-trash" aria-hidden="true"></i>
                     </a>
@@ -344,7 +348,8 @@
                                 new_tr.find(".file_size").text(ret.data.file_size);
                                 new_tr.find(".update_user").text(ret.data.update_user);
                                 new_tr.find(".update_time").text(ret.data.update_time);
-                                new_tr.find(".delete a").attr("data-fid", ret.data.id);
+                                new_tr.find(".delete a.btn-danger").attr("data-fid", ret.data.id);
+                                new_tr.find(".delete a.btn-default").attr("data-fid", ret.data.id).attr("href", ret.data.download_link);
                                 console.log(new_tr.html());
                                 $("#file_content").append(new_tr);
                             })

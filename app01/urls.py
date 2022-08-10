@@ -1,7 +1,7 @@
 from django.urls import path, re_path, include
 from app01.views.account import views
 from app01.views import project
-from app01.views import manage, wiki, file, setting, issue
+from app01.views import manage, wiki, file, setting, issue, dashboard
 
 
 urlpatterns = [
@@ -30,7 +30,7 @@ urlpatterns = [
 
     # 进入项目
     re_path(r'^manage/(?P<project_id>\d+)/', include([
-        re_path(r'^dashboard/$', manage.dashboard, name='dashboard'),
+        re_path(r'^dashboard/$', dashboard.dashboard, name='dashboard'),
         
         re_path(r'^statistics/$', manage.statistics, name='statistics'),
 

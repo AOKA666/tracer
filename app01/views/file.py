@@ -2,6 +2,7 @@ import json
 from urllib import response
 from django.shortcuts import render, HttpResponse
 from django.http import JsonResponse
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from app01 import models
 from app01.forms.file import FileRepositoryForm, EditFolderForm, UploadPostForm
@@ -130,7 +131,8 @@ def cos_post(request, project_id):
             "name": instance.name,
             "file_size": instance.file_size,
             "update_user": instance.update_user.username,
-            "update_time": instance.update_time.strftime("%Y年%m月%d日 %H:%M:%S")
+            "update_time": instance.update_time.strftime("%Y年%m月%d日 %H:%M:%S"),
+            "download_link": reverse("app01:file_download", kwargs={"project_id":project_id, "file_id": instance.id})
         }
         return JsonResponse({"status": 1, "data": result})
     else:

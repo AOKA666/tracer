@@ -10,7 +10,8 @@ from app01 import models
 from app01.utils.func.issue_record import reply_record
 
 
-class FilterGenerate:
+class CheckFilter:
+    """前端checkbox过滤器"""
     def __init__(self, name, choice_list, request):
         self.choice_list = choice_list
         self.request = request
@@ -29,7 +30,6 @@ class FilterGenerate:
                     param_list.remove(str(key))
             else:
                 param_list.append(str(key))
-            print(param_list)
             # 构造新的过滤链接
             path = self.request.GET.copy()
             path._mutable = True
@@ -40,6 +40,34 @@ class FilterGenerate:
             yield mark_safe(html)
             
 
+class SelectFilter:
+    """前端select过滤器"""
+    def __init__(self, name, choice_list, request):
+        self.choice_list = choice_list
+        self.request = request
+        self.name = name
+
+    def __iter__(self):    
+        for item in self.choice_list:
+            param_list = self.request.GET.getlist(self.name)
+            key = item[0]
+            text = item[1]
+            selected = ""         
+            if str(key) in param_list: # 当前是选中的，则下一次点击应该剔除
+                selected = "selected"
+                param_list.remove(str(key))
+            else:
+                param_list.append(str(key))
+            # 构造新的过滤链接
+            path = self.request.GET.copy()
+            path._mutable = True
+            path.setlist(self.name, param_list)
+
+            href = "{}?{}".format(self.request.path_info, path.urlencode())
+            html = f'<option value="{href}" {selected} class="filter-user">{text}<option/>'
+            yield mark_safe(html)
+    
+
 def issues(request, project_id):
     if request.method == 'GET':
         allow_filter_name = ["status", "issue_type", "priority"]
@@ -49,8 +77,21 @@ def issues(request, project_id):
             if not value_list:
                 continue           
             conditions["{}__in".format(name)] = value_list
-        filter_status = FilterGenerate('status', models.Issue.status_choices, request)
-        filter_priority = FilterGenerate('priority', models.Issue.priority_choices, request) 
+        # 左侧筛选栏
+        # 状态
+        filter_status = CheckFilter('status', models.Issue.status_choices, request)
+        # 优先级
+        filter_priority = CheckFilter('priority', models.Issue.priority_choices, request)
+        # 问题类型
+        issue_type_list = models.IssueType.objects.filter(project_id=project_id).values_list("id", "title")
+        filter_issue_type = CheckFilter('issue_type', issue_type_list, request)
+        # 指派和关注，需要列举出项目的创建者和参与者
+        user_list = [(request.project.creator.id, request.project.creator.username)]
+        project_user_list = models.ProjectUser.objects.filter(project_id=project_id).values_list("id", "user__username")
+        user_list.extend(list(project_user_list))
+        filter_assign = SelectFilter('assign', user_list, request)
+        filter_attention =  SelectFilter('attention', user_list, request)
+
         issue_list = models.Issue.objects.filter(project_id=project_id).filter(**conditions).order_by("-id")
         # 分页
         paginator = Paginator(issue_list, per_page=5)

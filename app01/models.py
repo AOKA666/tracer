@@ -64,7 +64,7 @@ class Project(models.Model):
     name = models.CharField(verbose_name='项目名', max_length=32)
     color = models.SmallIntegerField(verbose_name='颜色', choices=color_choices, default=3)
     desc = models.CharField(verbose_name='项目描述', max_length=255, null=True, blank=True)
-    use_space = models.IntegerField(verbose_name='项目已用空间', default=0)
+    use_space = models.IntegerField(verbose_name='项目已用空间', default=0, help_text="字节")
     star = models.BooleanField(verbose_name='星标', default=False)
 
     join_count = models.SmallIntegerField(verbose_name='参与人数', default=1)
@@ -185,3 +185,20 @@ class IssueReply(models.Model):
     time = models.DateTimeField(verbose_name="记录时间", auto_now_add=True)
     parent = models.ForeignKey(verbose_name="父记录", to="self", blank=True, null=True, on_delete=models.CASCADE)
     depth = models.SmallIntegerField(verbose_name="深度", default=1)
+
+
+class ProjectInvite(models.Model):
+    """项目邀请码"""
+    project = models.ForeignKey(verbose_name="项目", to="Project", on_delete=models.CASCADE)
+    code = models.CharField(verbose_name="邀请码", max_length=128, unique=True)
+    count = models.PositiveIntegerField(verbose_name="限制数量", null=True, blank=True, help_text="空表示无数量限制")
+    use_count = models.PositiveIntegerField(verbose_name="已邀请数量", default=0)
+    period_choices = (
+        (30, '30分钟'),
+        (60, '1小时'),
+        (300, '5小时'),
+        (1440, '24小时'),
+    )
+    period = models.SmallIntegerField(verbose_name="有效期", choices=period_choices, default=1440)
+    inviter = models.ForeignKey(verbose_name="邀请者", to="UserInfo", related_name="invite", on_delete=models.CASCADE)
+    create_time = models.DateTimeField(verbose_name="创建时间", auto_now_add=True)

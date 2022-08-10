@@ -1,6 +1,75 @@
 {% extends 'app01/layout/manage.html' %}
+{% load dashboard %}
 
-
+{% block mycss %}
+<style>
+    .trend{
+        height: 300px;
+    }
+</style>
+{% endblock %}
 {% block body %}
-<h1>dashboard</h1>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">新增问题趋势</div>
+                <div class="panel-body trend">
+                    Panel content
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">问题</div>
+                        <div class="panel-body">
+                            {% for k,v in issue_dict.items %}
+                                <a href="{% url 'app01:issues' request.project.id %}?status={{ k }}">{{ v.type }}: {{ v.count }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">项目成员</div>
+                        <div class="panel-body">
+                            Panel content
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">详细</div>
+                <div class="panel-body">
+                    <table>
+                        <tr>
+                            <td>项目名称：</td>
+                            <td>{{ request.project.name }}</td>
+                        </tr>
+                        <tr>
+                            <td>项目描述：</td>
+                            <td>{{ request.project.desc }}</td>
+                        </tr>
+                        <tr>
+                            <td>创建时间：</td>
+                            <td>{{ request.project.create_datetime|date:'Y-m-d H:i:s' }}</td>
+                        </tr>
+                        <tr>
+                            <td>项目空间：</td>
+                            <td>{% render_space request.project.use_space %} / {{ request.price_policy.price_policy.project_space }}GB</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">动态</div>
+                <div class="panel-body">
+                    Panel content
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
