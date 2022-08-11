@@ -20,11 +20,11 @@ def project_list(request):
                 project_display['create'].append(project)
         # 我参与的
         join_projects = models.ProjectUser.objects.filter(user=request.tracer)
-        for project in join_projects:
-            if project.start:
-                project_display['star'].append({"project": project, "project_type": "join"})
+        for item in join_projects:
+            if item.project.star:
+                project_display['star'].append({"project": item.project, "project_type": "join"})
             else:
-                project_display['join'].append(project)
+                project_display['join'].append(item.project)
         return render(request, 'app01/project_list.html', {'form': form, 'project_display': project_display})
     form = ProjectForm(request, request.POST)
     if form.is_valid():

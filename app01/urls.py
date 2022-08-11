@@ -57,5 +57,9 @@ urlpatterns = [
         re_path(r'^issues/(?P<issue_id>\d+)/$', issue.details, name='issue_details'),
         re_path(r'^issues/(?P<issue_id>\d+)/record/$', issue.record, name='issue_record'),
         re_path(r'^issues/(?P<issue_id>\d+)/change/data/$', issue.data_change, name='issue_data_change'),
-    ]))
+        re_path(r'^issues/generate/code/$', issue.generate_code, name='issue_generate_code'),
+
+    ])),
+    # 加入项目
+    re_path(r'^project/invite/join/(?P<code>\w+)/$', issue.invite_join, name='invite_join'),
 ]

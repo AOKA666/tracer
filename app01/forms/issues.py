@@ -42,7 +42,6 @@ class IssueForm(BootstrapForm, forms.ModelForm):
         self.fields['attention'].choices = attention_list
 
 
-
 class IssueRecordForm(forms.ModelForm):
     class Meta:
         model = models.IssueReply

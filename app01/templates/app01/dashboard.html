@@ -6,6 +6,45 @@
     .trend{
         height: 300px;
     }
+    .issue-type-count{
+        font-size: 25px;
+    }
+    .color-red a{color:#ff1c1c;}
+    .color-blue a{color:#2C7EEA;}
+    .color-green a{color:green;}
+    .color-yellow a{color:#d58512}
+    .color-orange a{color:#ff5500}
+    .color-purple a{color:purple;}
+    .color-brown a{color:#693a17;}
+    .project-creator .avatar,.project-joiner .avatar,.project-activity .avatar{
+        width: 40px;
+        height: 40px;
+        background-color: #1A1A17;
+        color: white;
+        border-radius: 20px;
+        text-align: center;
+        line-height: 40px;
+        font-size: 16px;
+        display: inline-block;
+        margin-left: 10px;
+    }
+    .project-creator .creator-name,.project-joiner .creator-name{
+        display: inline-block;
+        margin-left: 10px;
+    }
+    .project-detail{
+        height: 200px;
+        margin-left: 10px;
+    }
+    .project-activity .well{
+        display: inline-block;
+        margin-left: 10px;
+        width: 80%;
+    }
+    .activity-time{
+        text-align: right;
+        color: #999;
+    }
 </style>
 {% endblock %}
 {% block body %}
@@ -13,7 +52,7 @@
     <div class="row">
         <div class="col-md-8">
             <div class="panel panel-default">
-                <div class="panel-heading">新增问题趋势</div>
+                <div class="panel-heading"><i class="fa fa-line-chart" aria-hidden="true"></i> 新增问题趋势</div>
                 <div class="panel-body trend">
                     Panel content
                 </div>
@@ -21,19 +60,43 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="panel panel-default">
-                        <div class="panel-heading">问题</div>
+                        <div class="panel-heading"><i class="fa fa-quora" aria-hidden="true"></i> 问题</div>
                         <div class="panel-body">
                             {% for k,v in issue_dict.items %}
-                                <a href="{% url 'app01:issues' request.project.id %}?status={{ k }}">{{ v.type }}: {{ v.count }}</a>
+                                <div class="col-sm-4">
+                                    <div class="issue-type-count color-{{ v.color }}">
+                                        <a href="{% url 'app01:issues' request.project.id %}?status={{ k }}">
+                                            {{ v.count }}
+                                        </a>
+                                    </div>
+                                    <div class="issue-type-name">
+                                        {{ v.type }}
+                                    </div>
+                                </div>
                             {% endfor %}
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="panel panel-default">
-                        <div class="panel-heading">项目成员</div>
+                        <div class="panel-heading"><i class="fa fa-user" aria-hidden="true"></i> 项目成员</div>
                         <div class="panel-body">
-                            Panel content
+                            <div class="project-creator">
+                                <h4>创建者</h4>
+                                <div>
+                                    <div class="avatar">{{ request.project.creator.username.0|upper }}</div>
+                                    <div class="creator-name">{{ request.project.creator.username }}</div>
+                                </div>
+                            </div>
+                            <div class="project-joiner">
+                                <h4>参与者</h4>
+                                {% for project_user in request.project.projectuser_set.all %}
+                                    <div>
+                                        <div class="avatar">{{ project_user.user.username.0|upper }}</div>
+                                        <div class="creator-name">{{ project_user.user.username }}</div>
+                                    </div>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -41,9 +104,9 @@
         </div>
         <div class="col-md-4">
             <div class="panel panel-default">
-                <div class="panel-heading">详细</div>
+                <div class="panel-heading"><i class="fa fa-id-card" aria-hidden="true"></i> 详细</div>
                 <div class="panel-body">
-                    <table>
+                    <table class="project-detail">
                         <tr>
                             <td>项目名称：</td>
                             <td>{{ request.project.name }}</td>
@@ -64,9 +127,16 @@
                 </div>
             </div>
             <div class="panel panel-default">
-                <div class="panel-heading">动态</div>
-                <div class="panel-body">
-                    Panel content
+                <div class="panel-heading"><i class="fa fa-refresh" aria-hidden="true"></i> 动态</div>
+                <div class="panel-body project-activity">
+                    {% for act in activity %}
+                        <div class="clearfix">
+                            <div class="avatar">{{ act.creator.username.0|upper }}</div>
+                            <div class="well well-sm">{{ act.creator }}将问题<b><{{ act.subject }}></b>指派给了: {{ act.assign.username }}</div>
+                        </div>
+                        <div class="activity-time">{{ act.create_time|date:'Y-m-d H:i:s' }}</div>
+                        <hr>
+                    {% endfor %}
                 </div>
             </div>
         </div>

@@ -1,0 +1,11 @@
+{% extends "app01/layout/manage.html" %}
+
+
+{% block body %}
+    {% if not status %}
+        {{ error_msg }}
+    {% else %}
+        加入成功！
+        <a class="btn btn-success" href="{% url 'app01:project_list' %}">进入项目</a>
+    {% endif %}
+{% endblock %}
