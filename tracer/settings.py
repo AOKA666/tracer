@@ -159,6 +159,7 @@ WHITE_REGEX_URL_LIST = [
     '/app01/login/sms/'
 ]
 
+ISSUE_PER_PAGE = 5
 
 try:
     from tracer.local_settings import *

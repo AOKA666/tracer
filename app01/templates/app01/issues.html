@@ -1,6 +1,7 @@
 {% extends 'app01/layout/manage.html' %}
 {% load static %}
 {% load tags %}
+{% load issues %}
 
 
 {% block mycss %}
@@ -174,11 +175,11 @@
                 {% for page in paginator %}
                     {% if page.number == current_page %}
                         <li class="active"><a
-                                href="{% url 'app01:issues' request.project.id %}?page={{ page.number }}">{{ page.number }}</a>
+                                href="{% url 'app01:issues' request.project.id %}?{% render_query_param conditions %}page={{ page.number }}">{{ page.number }}</a>
                         </li>
                     {% else %}
                         <li>
-                            <a href="{% url 'app01:issues' request.project.id %}?page={{ page.number }}">{{ page.number }}</a>
+                            <a href="{% url 'app01:issues' request.project.id %}?{% render_query_param conditions %}page={{ page.number }}">{{ page.number }}</a>
                         </li>
                     {% endif %}
                 {% endfor %}

@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 from django.utils.safestring import mark_safe
+from django.conf import settings
 from app01 import models
 from app01.utils.func.issue_record import reply_record
 from app01.utils.common import encoder, uid
@@ -95,7 +96,7 @@ def issues(request, project_id):
 
         issue_list = models.Issue.objects.filter(project_id=project_id).filter(**conditions).order_by("-id")
         # 分页
-        paginator = Paginator(issue_list, per_page=5)
+        paginator = Paginator(issue_list, per_page=settings.ISSUE_PER_PAGE)
         current_page = request.GET.get("page", "1")
         if not current_page.isdecimal():
             current_page = 1
