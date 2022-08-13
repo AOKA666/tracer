@@ -33,7 +33,8 @@ urlpatterns = [
         re_path(r'^dashboard/$', dashboard.dashboard, name='dashboard'),
         
         re_path(r'^statistics/$', statistic.statistics, name='statistics'),
-        re_path(r'^statistics/get/$', statistic.get_statistics, name='get_statistics'),
+        re_path(r'^statistics/status/$', statistic.get_status, name='get_status'),
+        re_path(r'^statistics/priority/$', statistic.get_priority, name='get_priority'),
 
         re_path(r'^file/$', file.file, name='file'),
         re_path(r'^file/delete/$', file.delete, name='delete_file'),

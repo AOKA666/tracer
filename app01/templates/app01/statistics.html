@@ -19,7 +19,7 @@
         <input type="text" class="form-control" placeholder="请选择日期范围" id="datepicker">
     </div>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-8">
             <div class="panel panel-default">
                 <div class="panel-heading"><i class="fa fa-bar-chart" aria-hidden="true"></i> 人员工作进度</div>
                 <div class="panel-body">
@@ -27,11 +27,11 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="panel panel-default">
                 <div class="panel-heading"><i class="fa fa-pie-chart" aria-hidden="true"></i> 优先级统计</div>
                 <div class="panel-body">
-
+                    <div id="priority_chart"></div>
                 </div>
             </div>
         </div>
@@ -43,10 +43,15 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script src="http://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>
     <script>
-        let GET_STATISTICS_URL = "{% url 'app01:get_statistics' request.project.id %}"
+        let GET_STATUS_URL = "{% url 'app01:get_status' request.project.id %}";
+        let GET_PRIORITY_URL = "{% url 'app01:get_priority' request.project.id %}"
         $(function () {
             initDateRangePicker();
-            issueStatusChart();
+
+            // 默认获取一次图表
+            var start = moment().subtract(29, 'days');
+            var end = moment();
+            statusChart(start.format("YYYY-MM-DD"), end.format("YYYY-MM-DD"));
             priorityChart();
         })
 
@@ -69,34 +74,27 @@
                  locale: {
                      format:'YYYY-MM-DD'
                      }
-             },function (start, end) {
+             },function () {
                 console.log("选择了"+start.format("YYYY-MM-DD")+"到"+end.format("YYYY-MM-DD"));
-                $.ajax({
-                    url: GET_STATISTICS_URL,
-                    type: "GET",
-                    dataType: "JSON",
-                    success: function (ret) {
-                        console.log(ret);
-                    }
-                })
+                statusChart(start.format("YYYY-MM-DD"), end.format("YYYY-MM-DD"));
             });
         }
-        function issueStatusChart() {
-            var chart = Highcharts.chart('container', {
+        function statusChart(start, end) {
+            var options = {
                 chart: {
                     type: 'column'
                 },
                 title: {
-                    text: '按性别划分的水果消费总量'
+                    text: '人员工作进度'
                 },
                 xAxis: {
-                    categories: ['苹果', '橘子', '梨', '葡萄', '香蕉']
+                    categories: []
                 },
                 yAxis: {
                     allowDecimals: false,
                     min: 0,
                     title: {
-                        text: '水果数量'
+                        text: '问题数量'
                     }
                 },
                 tooltip: {
@@ -111,29 +109,101 @@
                         stacking: 'normal'
                     }
                 },
-                series: [{
-                    name: '小张',
-                    data: [5, 3, 4, 7, 2],
-                    stack: 'male' // stack 值相同的为同一组
-                }, {
-                    name: '小潘',
-                    data: [3, 4, 4, 2, 5],
-                    stack: 'male'
-                }, {
-                    name: '小彭',
-                    data: [2, 5, 6, 2, 1],
-                    stack: 'female'
-                }, {
-                    name: '小王',
-                    data: [3, 0, 4, 4, 3],
-                    stack: 'female'
-                }]
-            });
+                series: []
+            };
+            $.ajax({
+                url: GET_STATUS_URL,
+                type: "GET",
+                data: {"start": start, "end": end},
+                dataType: "JSON",
+                success: function (ret) {
+                    console.log(ret);
+                    options.xAxis.categories = ret.categories;
+                    options.series = ret.series;
+                    Highcharts.chart('container', options);
+                }
+            })
         }
 
-    function priorityChart() {
+    function priorityChart() {       
+        var options = {
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                spacing : [100, 0 , 40, 0]
+            },
+            title: {
+                floating:true,
+                text: '优先级统计'
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                        style: {
+                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                        }
+                    },
+                    point: {
+                        events: {
+                            mouseOver: function(e) {  // 鼠标滑过时动态更新标题
+                                // 标题更新函数，API 地址：https://api.hcharts.cn/highcharts#Chart.setTitle
+                                chart.setTitle({
+                                    text: e.target.name+ '\t'+ e.target.y + ' %'
+                                });
+                            }
+                            //, 
+                            // click: function(e) { // 同样的可以在点击事件里处理
+                            //     chart.setTitle({
+                            //         text: e.point.name+ '\t'+ e.point.y + ' %'
+                            //     });
+                            // }
+                        }
+                    },
+                }
+            },
+            series: [{
+                type: 'pie',
+                innerSize: '80%',
+                name: '市场份额',
+                data: [
+                        {name:'低',   y: 45.0},
+                        {name:'中',   y:    25.0},
+                        {
+                            name: '高',
+                            y: 30.0,
+                            sliced: true,
+                            selected: true,
+                        },
+                    ]
+            }],
+        }
+        $.ajax({
+            url: GET_PRIORITY_URL,
+            type: "GET",
+            dataType: "JSON",
+            success: function(ret){
+                console.log(ret);
+                
+            }
 
-    }
-
+        })
+        Highcharts.chart("priority_chart", options,function(c) { // 图表初始化完毕后的会掉函数
+            // 环形图圆心
+            var centerY = c.series[0].center[1],
+                titleHeight = parseInt(c.title.styles.fontSize);
+            // 动态设置标题位置
+            c.setTitle({
+                y:centerY + titleHeight/2
+            });
+        });
+    }    
     </script>
 {% endblock %}

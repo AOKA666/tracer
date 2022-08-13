@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from django.shortcuts import render
 from django.db.models import Count
 from django.urls import reverse
@@ -7,7 +8,7 @@ from app01 import models
 def dashboard(request, project_id):
     # 问题
     default_issue_list = models.Issue.status_choices
-    issue_dict = {}
+    issue_dict = OrderedDict()
     color_list = ["red","blue","green","yellow","purple","orange","brown"]
     for item in default_issue_list:
         issue_dict[item[0]] = {"type": item[1], "count": 0, "color": color_list[default_issue_list.index(item)]}
