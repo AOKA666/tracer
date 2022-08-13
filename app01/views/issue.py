@@ -308,6 +308,7 @@ def generate_code(request, project_id):
 
 
 def invite_join(request, code):
+    """访问邀请码"""
     invite_obj = models.ProjectInvite.objects.filter(code=code).first()
     # 1.邀请码是否正确
     if not invite_obj:

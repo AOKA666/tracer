@@ -1,6 +1,139 @@
 {% extends 'app01/layout/manage.html' %}
 
 
+{% block mycss %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+    <style>
+        .date-picker{
+            width: 300px;
+            margin-bottom: 10px;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-<h1>statistics</h1>
+<div class="container-fluid">
+
+    <div class="input-group input-group date-picker">
+        <span class="input-group-addon" id="sizing-addon1">日期范围</span>
+        <input type="text" class="form-control" placeholder="请选择日期范围" id="datepicker">
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading"><i class="fa fa-bar-chart" aria-hidden="true"></i> 人员工作进度</div>
+                <div class="panel-body">
+                    <div id="container"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading"><i class="fa fa-pie-chart" aria-hidden="true"></i> 优先级统计</div>
+                <div class="panel-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script src="http://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>
+    <script>
+        let GET_STATISTICS_URL = "{% url 'app01:get_statistics' request.project.id %}"
+        $(function () {
+            initDateRangePicker();
+            issueStatusChart();
+            priorityChart();
+        })
+
+        function initDateRangePicker(){
+            var start = moment().subtract(29, 'days');
+            var end = moment();
+            $('#datepicker').daterangepicker({
+                 autoApply: true,
+                 startDate: start,
+                 endDate: end,
+                 maxDate: moment(),
+                 ranges: {
+                    'Today': [moment(), moment()],
+                    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                    'This Month': [moment().startOf('month'), moment().endOf('month')],
+                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                     },
+                 locale: {
+                     format:'YYYY-MM-DD'
+                     }
+             },function (start, end) {
+                console.log("选择了"+start.format("YYYY-MM-DD")+"到"+end.format("YYYY-MM-DD"));
+                $.ajax({
+                    url: GET_STATISTICS_URL,
+                    type: "GET",
+                    dataType: "JSON",
+                    success: function (ret) {
+                        console.log(ret);
+                    }
+                })
+            });
+        }
+        function issueStatusChart() {
+            var chart = Highcharts.chart('container', {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: '按性别划分的水果消费总量'
+                },
+                xAxis: {
+                    categories: ['苹果', '橘子', '梨', '葡萄', '香蕉']
+                },
+                yAxis: {
+                    allowDecimals: false,
+                    min: 0,
+                    title: {
+                        text: '水果数量'
+                    }
+                },
+                tooltip: {
+                    formatter: function () {
+                        return '<b>' + this.x + '</b><br/>' +
+                            this.series.name + ': ' + this.y + '<br/>' +
+                            '总量: ' + this.point.stackTotal;
+                    }
+                },
+                plotOptions: {
+                    column: {
+                        stacking: 'normal'
+                    }
+                },
+                series: [{
+                    name: '小张',
+                    data: [5, 3, 4, 7, 2],
+                    stack: 'male' // stack 值相同的为同一组
+                }, {
+                    name: '小潘',
+                    data: [3, 4, 4, 2, 5],
+                    stack: 'male'
+                }, {
+                    name: '小彭',
+                    data: [2, 5, 6, 2, 1],
+                    stack: 'female'
+                }, {
+                    name: '小王',
+                    data: [3, 0, 4, 4, 3],
+                    stack: 'female'
+                }]
+            });
+        }
+
+    function priorityChart() {
+
+    }
+
+    </script>
 {% endblock %}
