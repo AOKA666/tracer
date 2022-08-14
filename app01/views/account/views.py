@@ -1,9 +1,11 @@
+import json
 import uuid
 import datetime
 from django.http import JsonResponse
 from django.shortcuts import render, HttpResponse, redirect
 from app01.forms.account import RegisterForm, SendSmsForm, LoginSmsForm, LoginForm
 from app01 import models
+from app01.utils.common import uid, encoder
 from django.db.models import Q
 
 
@@ -71,7 +73,6 @@ def login_sms(request):
     return render(request, "app01/login_sms.html", {"form": form})
 
 
-
 def login(request):
     """密码登录"""
     if request.method == 'POST':
@@ -97,7 +98,6 @@ def login(request):
     return render(request, "app01/login.html", {"form": form})
 
 
-
 def get_img(request):
     """生成验证码"""
     from app01.utils.imgcode import check_code
@@ -120,4 +120,3 @@ def logout(request):
 
 def index(request):
     return render(request, "app01/index.html")
-

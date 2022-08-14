@@ -49,10 +49,10 @@
             initDateRangePicker();
 
             // 默认获取一次图表
-            var start = moment().subtract(29, 'days');
-            var end = moment();
+            let start = moment().subtract(29, 'days');
+            let end = moment();
             statusChart(start.format("YYYY-MM-DD"), end.format("YYYY-MM-DD"));
-            priorityChart();
+            priorityChart(start.format("YYYY-MM-DD"), end.format("YYYY-MM-DD"));
         })
 
         function initDateRangePicker(){
@@ -74,9 +74,10 @@
                  locale: {
                      format:'YYYY-MM-DD'
                      }
-             },function () {
+             },function (start, end, label) {
                 console.log("选择了"+start.format("YYYY-MM-DD")+"到"+end.format("YYYY-MM-DD"));
                 statusChart(start.format("YYYY-MM-DD"), end.format("YYYY-MM-DD"));
+                priorityChart(start.format("YYYY-MM-DD"), end.format("YYYY-MM-DD"));
             });
         }
         function statusChart(start, end) {
@@ -96,6 +97,9 @@
                     title: {
                         text: '问题数量'
                     }
+                },
+                credits:{
+                    enabled: false
                 },
                 tooltip: {
                     formatter: function () {
@@ -125,8 +129,8 @@
             })
         }
 
-    function priorityChart() {       
-        var options = {
+    function priorityChart(start, end) {
+        var config = {
             chart: {
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
@@ -137,6 +141,9 @@
                 floating:true,
                 text: '优先级统计'
             },
+            credits:{
+                    enabled: false
+                },
             tooltip: {
                 pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
             },
@@ -155,11 +162,11 @@
                         events: {
                             mouseOver: function(e) {  // 鼠标滑过时动态更新标题
                                 // 标题更新函数，API 地址：https://api.hcharts.cn/highcharts#Chart.setTitle
-                                chart.setTitle({
-                                    text: e.target.name+ '\t'+ e.target.y + ' %'
-                                });
+                                //chart.setTitle({
+                                //    text: e.target.name+ '\t'+ e.target.y + ' %'
+                                //});
                             }
-                            //, 
+                            //,
                             // click: function(e) { // 同样的可以在点击事件里处理
                             //     chart.setTitle({
                             //         text: e.point.name+ '\t'+ e.point.y + ' %'
@@ -175,7 +182,7 @@
                 name: '市场份额',
                 data: [
                         {name:'低',   y: 45.0},
-                        {name:'中',   y:    25.0},
+                        {name:'中',   y: 25.0},
                         {
                             name: '高',
                             y: 30.0,
@@ -184,26 +191,36 @@
                         },
                     ]
             }],
-        }
+        };
         $.ajax({
             url: GET_PRIORITY_URL,
             type: "GET",
+            data: {start:start, end:end},
             dataType: "JSON",
             success: function(ret){
                 console.log(ret);
-                
+                config.series[0].data[0].y = ret['低'];
+                config.series[0].data[1].y = ret['中'];
+                config.series[0].data[2].y = ret['高'];
+                config.plotOptions.pie.point.events.mouseOver=function(e) {  // 鼠标滑过时动态更新标题
+                    // 标题更新函数，API 地址：https://api.hcharts.cn/highcharts#Chart.setTitle
+                    chart.setTitle({
+                        text: e.target.name+ '\t'+ e.target.y + '个'
+                    });
+                }
+                var chart = Highcharts.chart("priority_chart", config, function(c) {
+                    // 环形图圆心
+                    var centerY = c.series[0].center[1],
+                        titleHeight = parseInt(c.title.styles.fontSize);
+                    // 动态设置标题位置
+                    c.setTitle({
+                        y:centerY + titleHeight/2
+                    });
+
+                })
             }
 
         })
-        Highcharts.chart("priority_chart", options,function(c) { // 图表初始化完毕后的会掉函数
-            // 环形图圆心
-            var centerY = c.series[0].center[1],
-                titleHeight = parseInt(c.title.styles.fontSize);
-            // 动态设置标题位置
-            c.setTitle({
-                y:centerY + titleHeight/2
-            });
-        });
     }    
     </script>
 {% endblock %}

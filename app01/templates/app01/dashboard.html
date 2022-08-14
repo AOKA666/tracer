@@ -3,9 +3,6 @@
 
 {% block mycss %}
 <style>
-    .trend{
-        height: 300px;
-    }
     .issue-type-count{
         font-size: 25px;
     }
@@ -54,7 +51,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading"><i class="fa fa-line-chart" aria-hidden="true"></i> 新增问题趋势</div>
                 <div class="panel-body trend">
-                    Panel content
+                    <div id="container"></div>
                 </div>
             </div>
             <div class="row">
@@ -142,4 +139,81 @@
         </div>
     </div>
 </div>
+{% endblock %}
+{% block script %}
+    <script src="http://cdn.highcharts.com.cn/highcharts/highcharts.js"></script>
+    <script>
+        let GET_ISSUE_TREND = "{% url 'app01:issue_trend' request.project.id %}"
+        Highcharts.setOptions({
+            global: {
+                useUTC: false
+            }
+        })
+        $(function () {
+            // 渲染新增问题趋势
+            initTrend();
+        })
+
+        function initTrend() {
+            var config = {
+                title: {
+                        text: '近一个月内新增问题趋势'
+                },
+                xAxis: {
+                    type: 'datetime',
+                    tickInterval: 24 * 3600 * 1000, // 坐标轴刻度间隔为一星期
+                    labels: {
+                        formatter: function () {
+                            return Highcharts.dateFormat("%m-%d", this.value);
+                        },
+                        rotation: -30
+                    },
+                },
+                yAxis: {
+                        title: {
+                                text: '问题数量'
+                        }
+                },
+                credits:{
+                    enabled: false
+                },
+
+                plotOptions: {
+                        series: {
+                                label: {
+                                        connectorAllowed: false
+                                },
+                        },
+                },
+                series: [{
+                        data: [
+
+                        ]
+                }],
+                responsive: {
+                        rules: [{
+                                condition: {
+                                        maxWidth: 500
+                                },
+                                chartOptions: {
+                                        legend: {
+                                                layout: 'horizontal',
+                                                align: 'center',
+                                                verticalAlign: 'bottom'
+                                        }
+                                }
+                        }]
+                }
+            };
+            $.ajax({
+                url: GET_ISSUE_TREND,
+                type: "GET",
+                success: function(ret){
+                    console.log(ret.data);
+                    config.series[0].data = ret.data;
+                    Highcharts.chart("container", config)
+                }
+            })
+        }
+    </script>
 {% endblock %}

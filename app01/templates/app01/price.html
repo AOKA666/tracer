@@ -1,0 +1,72 @@
+{% extends 'app01/layout/base.html' %}
+
+
+{% block mycss %}
+    <style>
+        .price{
+            font-size: 20px;
+            color:#ff5500;
+        }
+        .buy{
+            display: block;
+            width: 100px;
+            margin: 0 auto;
+        }
+    </style>
+{% endblock %}
+
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="page-header" style="text-align: center">
+            <h1>购买套餐</h1>
+        </div>
+        {% for item in price_policy_list %}
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading text-center"><h4>{{ item.title }}</h4></div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-10">
+                            <form method="get" action="{% url 'app01:buy' item.id %}">
+                                <div class="input-group">
+                                    <span class="input-group-addon">购买数量</span>
+                                    <input type="text" class="form-control" name="number">
+                                    <span class="input-group-btn">
+                                        <input type="submit" class="btn btn-primary" value="立即购买">
+                                    </span>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <table class="table">
+                        <caption>套餐详情</caption>
+                        <tbody>
+                            <tr class="price">
+                                <th scope="row">价格</th>
+                                <td>{{ item.price }} <b><i class="fa fa-jpy" aria-hidden="true"></i>/年</b></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">项目数量</th>
+                                <td>{{ item.project_num }} <b>个</b></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">项目成员</th>
+                                <td>{{ item.project_member }} <b>个</b></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">项目空间</th>
+                                <td>{{ item.project_space }} <b>G</b></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">单文件大小</th>
+                                <td>{{ item.per_file_size }} <b>M</b></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+{% endblock %}

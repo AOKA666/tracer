@@ -26,7 +26,6 @@ class LoginMiddleware(MiddlewareMixin):
             _object = models.Transaction.objects.filter(user=request.tracer, status=2).order_by("id").first()
         request.price_policy = _object
 
-
     def process_view(self, request, view, args, kwargs):
         # url是否以manage开头
         if not request.path_info.startswith('/app01/manage/'):

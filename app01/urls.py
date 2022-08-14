@@ -1,7 +1,7 @@
 from django.urls import path, re_path, include
 from app01.views.account import views
 from app01.views import project
-from app01.views import statistic, wiki, file, setting, issue, dashboard
+from app01.views import statistic, wiki, file, setting, issue, dashboard, price
 
 
 urlpatterns = [
@@ -19,6 +19,12 @@ urlpatterns = [
     path('index/', views.index, name='index'),
     # 退出登录
     path('logout/', views.logout, name='logout'),
+    # 价格界面
+    path('price/', price.price, name='price'),
+    # 点击购买
+    re_path(r'^price/buy/(?P<price_policy_id>\d+)/$', price.buy, name='buy'),
+    # 确认支付
+    re_path(r'^price/payment/(?P<price_policy_id>\d+)/$', price.payment, name='payment'),
 
 
     # 项目管理
@@ -31,6 +37,7 @@ urlpatterns = [
     # 进入项目
     re_path(r'^manage/(?P<project_id>\d+)/', include([
         re_path(r'^dashboard/$', dashboard.dashboard, name='dashboard'),
+        re_path(r'^dashboard/issues/trend/$', dashboard.issue_trend, name='issue_trend'),
         
         re_path(r'^statistics/$', statistic.statistics, name='statistics'),
         re_path(r'^statistics/status/$', statistic.get_status, name='get_status'),

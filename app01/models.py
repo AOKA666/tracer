@@ -33,6 +33,9 @@ class PricePolicy(models.Model):
 
     create_datetime = models.DateTimeField(verbose_name='创建时间', auto_now_add=True)
 
+    def __str__(self):
+        return self.title
+
 
 class Transaction(models.Model):
     """交易记录"""

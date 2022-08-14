@@ -156,7 +156,8 @@ WHITE_REGEX_URL_LIST = [
     '/app01/get/img/',
     '/app01/index/',
     '/app01/logout',
-    '/app01/login/sms/'
+    '/app01/login/sms/',
+    '/app01/price/'
 ]
 
 ISSUE_PER_PAGE = 5
