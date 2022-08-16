@@ -85,5 +85,4 @@ def get_priority(request, project_id):
     ret = {}
     for i in list(issue_list):
         ret[tpl[i['priority']]] = i['count']
-    print(ret)
     return JsonResponse(ret)

@@ -25,6 +25,10 @@ urlpatterns = [
     re_path(r'^price/buy/(?P<price_policy_id>\d+)/$', price.buy, name='buy'),
     # 确认支付
     re_path(r'^price/payment/(?P<price_policy_id>\d+)/$', price.payment, name='payment'),
+    # 支付完成页面跳转
+    path('pay/notify/', price.notify, name='notify'),
+    path('pay/pay_return/', price.pay_return, name='pay_return'),
+
 
 
     # 项目管理

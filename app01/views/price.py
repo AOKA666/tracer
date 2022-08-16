@@ -1,10 +1,12 @@
 import datetime
 import json
 
-from django.shortcuts import render, redirect
-
+from django.shortcuts import render, redirect, HttpResponse
+from django_redis import get_redis_connection
 from app01 import models
 from app01.utils.common import encoder, uid
+from app01.utils.alipay.instant_pay import Alipay
+from tracer import local_settings
 
 
 def price(request):
@@ -46,46 +48,67 @@ def buy(request, price_policy_id):
         "subtract_balance": round(refund_balance, 2),
         "total_balance": remaining_balance
     }
-    print(context)
+    # 写入redis
+    conn = get_redis_connection()
+    key = 'payment_{}'.format(request.tracer.phone)
+    conn.set(key, json.dumps(context), ex=60*30)
     return render(request, 'app01/payment.html', {'context': context})
 
 
 def payment(request, price_policy_id):
     """确认支付"""
-    price_policy = models.PricePolicy.objects.get(id=price_policy_id)
-    total = request.GET.get("total_balance")
-    number = request.GET.get("number")
-    if not number.isdecimal():
+    conn = get_redis_connection()
+    key = 'payment_{}'.format(request.tracer.phone)
+    context_string = conn.get(key)
+    if not context_string:
         return redirect("app01:price")
-    if int(number) < 1:
-        return redirect("app01:price")
+    context = json.loads(context_string.decode("utf-8"))
+
     order = encoder(uid(request.tracer.phone))
     models.Transaction.objects.create(
-        status=2,
+        status=1,
         order=order,
         user=request.tracer,
-        price_policy=price_policy,
-        count=number,
-        price=total
+        price_policy_id=context['policy_id'],
+        count=context['number'],
+        price=context['total_balance']
     )
-    url = ""
-    params = {
-        'app_id': '',
-        'method': 'alipay.trade.page.pay',
-        'format': 'JSON',
-        'return_url': '',
-        'notity_url': '',
-        'charset': 'utf-8',
-        'sign_type': 'RSA2',
-        'timestamp': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'version': '1.0',
-        'biz_content': json.dumps({
-            'out_trade_no': order,
-            'product_code': 'FAST_INSTANT_TRADE_PAY',
-            'total_amount': total,
-            'subject': 'tracer套餐购买'
-        }, separators=(',', ':'))
-    }
+    # 签名生成支付链接并跳转
+    alipay = Alipay(
+        app_id = local_settings.ALI_APPID,
+        return_url = local_settings.RETURN_URL,
+        notify_url = local_settings.NOTIFY_URL,
+        private_key = local_settings.APP_PRIVATE_KEY_PATH,
+        ali_public_key = local_settings.ALI_PUBLIC_KEY_PATH,
+    )
+    result = alipay.sign(order, context['total_balance'])
+    pay_url = "{}?{}".format(local_settings.GATE_WAY_URL, result)
+    return redirect(pay_url)
 
-    
-    return redirect(url)
+
+def notify(request):
+    return HttpResponse("success")
+
+
+def pay_return(request):
+    # 写入数据库
+    params = request.GET.dict()
+    sign = params.pop("sign", None)
+    alipay = Alipay(
+            app_id = local_settings.ALI_APPID,
+            return_url = local_settings.RETURN_URL,
+            notify_url = local_settings.NOTIFY_URL,
+            private_key = local_settings.APP_PRIVATE_KEY_PATH,
+            ali_public_key = local_settings.ALI_PUBLIC_KEY_PATH,
+        )    
+    status = alipay.verify(params, sign)
+    if status:
+        current_datetime = datetime.datetime.now()
+        out_trade_no = params['out_trade_no']
+        _object = models.Transaction.objects.filter(order=out_trade_no).first()
+
+        _object.status = 2
+        _object.start_time = current_datetime
+        _object.end_time = current_datetime + datetime.timedelta(days=365 * _object.count)
+        _object.save()
+        return HttpResponse('<h1>支付成功</h1>')         

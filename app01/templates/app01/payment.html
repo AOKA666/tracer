@@ -3,7 +3,7 @@
 
 {% block body %}
 <div class="container-fluid">
-    <h2>订单信息</h2>
+    <h2>订单信息(30分钟有效)</h2>
     <table class="table">
       <thead>
         <tr>
@@ -26,6 +26,6 @@
         </tr>
       </tbody>
     </table>
-    <a href="{% url 'app01:payment' context.policy_id %}?number={{ context.number }}&total={{ context.total_balance }}" class="btn btn-primary">立即支付</a>
+    <a href="{% url 'app01:payment' context.policy_id %}" class="btn btn-primary">立即支付</a>
 </div>
 {% endblock %}

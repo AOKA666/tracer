@@ -100,7 +100,7 @@
                     <div class="form-group">
                         <label for="id_for_desc" class="col-sm-2 control-label">{{ form.desc.label }}</label>
                         <div class="col-sm-10">
-                            <div id="editor"></div>
+                            <div id="editor">{{ form.desc }}</div>
                             <span class="error">{{ form.errors.0 }}</span>
                         </div>
                     </div>
@@ -372,7 +372,7 @@
 
         function saveButton(){
             $(".editormd-menu #save").click(function(){
-                let data_dict = {"name": "content", "value": editor.getValue()};
+                let data_dict = {"name": "desc", "value": editor.getValue()};
                 bindFormChangeEvent(data_dict);
             })
         }

@@ -46,6 +46,7 @@ class GenerateFilter:
             yield mark_safe(html)
 
     def get_new_url(self, param_list):
+        """获取a标签中的链接，完成筛选时页面的跳转"""
         path = self.request.GET.copy()
         path._mutable = True
         path.setlist(self.name, param_list)
@@ -177,7 +178,7 @@ def data_change(request, project_id, issue_id):
     field = models.Issue._meta.get_field(name)
 
     # 输入框：subject, content, start_time, end_time
-    if name in ["subject", "content", "start_date", "end_date"]:
+    if name in ["subject", "desc", "start_date", "end_date"]:
         if not value:
             # 是否允许为空
             if not field.null:
@@ -272,6 +273,7 @@ def data_change(request, project_id, issue_id):
 
 @csrf_exempt
 def generate_code(request, project_id):
+    """生成邀请码"""
     form = InviteForm(request.POST)
     if form.is_valid():
         # 1.邀请人是不是项目创建者
