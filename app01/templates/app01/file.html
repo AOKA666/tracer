@@ -96,14 +96,14 @@
                                 <a class="btn btn-default" href="#" data-toggle="modal" data-target="#addFile" data-fid="{{ file_obj.id }}" data-name="{{ file_obj.name }}">
                                     <i class="fa fa-pencil-square-o" aria-hidden="true"></i><span class="hidden">编辑文件夹</span>
                                 </a>
-                                <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#deleteFile" data-fid="{{ file_obj.id }}">
+                                <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#deleteFile" data-fid="{{ file_obj.id }}" data-type="folder">
                                     <i class="fa fa-trash" aria-hidden="true"></i>
                                 </a>
                                 {% else %}
                                 <a class="btn btn-default" href="{% url 'app01:file_download' request.project.id file_obj.id %}" data-fid="{{ file_obj.id }}">
                                     <i class="fa fa-cloud-download" aria-hidden="true"></i><span class="hidden">下载</span>
                                 </a>
-                                <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#deleteFile" data-fid="{{ file_obj.id }}">
+                                <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#deleteFile" data-fid="{{ file_obj.id }}" data-type="file">
                                     <i class="fa fa-trash" aria-hidden="true"></i>
                                 </a>
                                 {% endif %}
@@ -156,7 +156,7 @@
             <div class="modal-content">
                 <div class="alert alert-danger alert-dismissible fade in" role="alert" style="margin:0;">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-                    <h4>确定要删除文件夹吗!</h4>
+                    <h4 class="modal-title"></h4>
                     <br>
                     <p>文件夹中所有内容也会被删除！</p>
                     <p style="text-align: right;">
@@ -193,7 +193,7 @@
                     <a class="btn btn-default" href="#" data-fid="{{ file_obj.id }}">
                         <i class="fa fa-cloud-download" aria-hidden="true"></i><span class="hidden">下载</span>
                     </a>
-                    <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#deleteFile">
+                    <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#deleteFile" data-type="file">
                         <i class="fa fa-trash" aria-hidden="true"></i>
                     </a>
                 </td>
@@ -260,7 +260,15 @@
             $('#deleteFile').on('shown.bs.modal', function (e){
                 let btn = $(e.relatedTarget);
                 let fid = btn.data("fid");
+                let name = btn.data("type");
                 let modal = $(this);
+                if(name==="file"){
+                    modal.find(".modal-title").text("确定要删除文件吗？");
+                    modal.find("p:first").text("");
+                }else{
+                    modal.find(".modal-title").text("确定要删除文件夹吗？");
+                    modal.find("p:first").text("文件夹中所有内容也会被删除！");
+                }
                 modal.find("#delete_submit").attr("data-fid", fid);
             })
         }

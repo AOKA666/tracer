@@ -34,11 +34,22 @@ def issue_trend(request, project_id):
     new_issues = models.Issue.objects.filter(
         project_id=project_id, create_time__gte=last_month, create_time__lte=today).values("create_time").annotate(
         c=Count("id"))
+    """
+    方法2(sqlite): new_issues = models.Issue.objects.filter(
+        project_id=project_id, create_time__gte=last_month, create_time__lte=today).extra(
+            select={"ctime":"strftime('%%Y-%%m-%%d', app01_issue.create_time)"}
+        ).values("create_time").annotate(
+        c=Count("id"))
+        
+    方法3(mysql): new_issues = models.Issue.objects.filter(
+        project_id=project_id, create_time__gte=last_month, create_time__lte=today).extra(
+            select={"ctime":"DATE_FORMAT(app01_issue.create_time, '%%Y-%%m-%%d')"}
+        ).values("create_time").annotate(
+        c=Count("id"))
+    """
     for item in new_issues:
         item['create_time'] = item['create_time'].strftime("%m-%d")
-    print(new_issues)
     for i in new_issues:
         all_dates[i['create_time']][1] += i['c']
-    print(all_dates)
 
     return JsonResponse({"data": list(all_dates.values())})

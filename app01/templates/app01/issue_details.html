@@ -296,6 +296,7 @@
         }
 
         function display(ret){
+            console.log(ret);
             $.each(ret.data, function (index, value) {
                 let record = $("#reply-tmp").find(".record").clone();
                 record.attr("id", "id_" + value.id)

@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from app01 import models
 from app01.forms.file import FileRepositoryForm, EditFolderForm, UploadPostForm
-from app01.utils.tencent.cos import get_credential
+from app01.utils.tencent.cos import get_credential, cos_delete_file
 
 
 def file(request, project_id):
@@ -85,9 +85,11 @@ def delete(request, project_id):
                     else:
                         folder_list.append(child)
         # 循环完成之后列表中只剩下一个个文件
+        cos_delete_file(request.project.bucket, file_list)
         models.FileRepository.objects.filter(id=fid, project_id=project_id).delete()
-        # request.project.use_space.update(use_space=used_space)
-        # request.project.save()
+        instance = request.project
+        instance.use_space = used_space
+        instance.save()
         return JsonResponse({"status": True})
 
 

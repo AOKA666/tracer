@@ -57,7 +57,7 @@ def cos_delete_file(bucket, file_list, region='ap-shanghai'):
     # 构造批量删除的字典格式
     delete = []
     for file in file_list:
-        delete.append({file.key:file})
+        delete.append({'Key':file.key})
     response = client.delete_objects(
         Bucket=bucket,
         Delete={
